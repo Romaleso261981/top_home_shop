@@ -19,7 +19,7 @@ export default function Header() {
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           <Link href="/" className="text-xl md:text-2xl font-bold text-gray-900">
-            Сайт для Сергія Михайлика 
+            Простий магазин
           </Link>
 
           {/* Desktop Navigation */}
