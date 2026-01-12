@@ -37,18 +37,31 @@ export default function OrderForm() {
 
       const data = await response.json();
 
-      if (response.ok && data.success) {
-        setSubmitStatus({
-          type: "success",
-          message: "Дякуємо за замовлення! Наш менеджер зв'яжеться з вами найближчим часом.",
-        });
-        // Очищаємо форму після успішної відправки
-        setFormData({
-          name: "",
-          phone: "",
-          email: "",
-          size: "155*210",
-        });
+      if (response.ok) {
+        if (data.success) {
+          setSubmitStatus({
+            type: "success",
+            message: "Дякуємо за замовлення! Наш менеджер зв'яжеться з вами найближчим часом.",
+          });
+          // Очищаємо форму після успішної відправки
+          setFormData({
+            name: "",
+            phone: "",
+            email: "",
+            size: "155*210",
+          });
+        } else if (data.instruction) {
+          // Якщо є інструкція (Chat ID не налаштовано)
+          setSubmitStatus({
+            type: "error",
+            message: data.error || "Chat ID не налаштовано. " + (data.instruction || ""),
+          });
+        } else {
+          setSubmitStatus({
+            type: "error",
+            message: data.error || "Помилка відправки замовлення. Спробуйте ще раз.",
+          });
+        }
       } else {
         setSubmitStatus({
           type: "error",

@@ -1,0 +1,583 @@
+### Page state
+- Page URL: https://surveyridge.vercel.app/
+- Page Title: SurveyRidge - Шаблон сайта геодезистов недвижимости Next.js
+- Page Snapshot:
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e3]:
+      - navigation [ref=e4]:
+        - link "SurveyRidge Logo" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img "SurveyRidge Logo" [ref=e6]
+        - generic [ref=e7]:
+          - link "Главная" [ref=e8] [cursor=pointer]:
+            - /url: /
+          - link "О нас" [ref=e9] [cursor=pointer]:
+            - /url: /about/
+          - link "Проекты" [ref=e10] [cursor=pointer]:
+            - /url: /projects/
+          - link "Услуги" [ref=e11] [cursor=pointer]:
+            - /url: /services/
+          - link "Блог" [ref=e12] [cursor=pointer]:
+            - /url: /blogs/
+        - link "Связаться с нами" [ref=e14] [cursor=pointer]:
+          - /url: /contact
+    - generic [ref=e15]:
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - generic [ref=e19]:
+            - heading "Строительная компания" [level=4] [ref=e20]
+            - img "Hero Dot Liner" [ref=e21]
+          - heading "Проектируем вашу мечту" [level=2] [ref=e23]:
+            - generic [ref=e24]: Проектируем
+            - generic [ref=e25]: вашу
+            - generic [ref=e26]: мечту
+          - generic [ref=e27]:
+            - link "Получить оценку плана участка" [ref=e28] [cursor=pointer]:
+              - /url: /contact
+            - link "Получить бесплатную консультацию" [ref=e29] [cursor=pointer]:
+              - /url: /contact
+          - generic [ref=e32]:
+            - generic [ref=e33]:
+              - heading "10K" [level=2] [ref=e651]
+              - heading "Проектов выполнено" [level=6] [ref=e35]
+            - generic [ref=e36]:
+              - heading "16K" [level=2] [ref=e652]
+              - heading "Довольных клиентов" [level=6] [ref=e38]
+            - generic [ref=e39]:
+              - heading "98%" [level=2] [ref=e653]
+              - heading "Клиентов довольны" [level=6] [ref=e41]
+        - generic [ref=e42]:
+          - generic [ref=e43]:
+            - paragraph [ref=e44]: SurveyRidge здесь, чтобы построить ваше строительство для страны, получившей век развития в новую эру машин.
+            - generic [ref=e45]:
+              - generic [ref=e46] [cursor=pointer]:
+                - generic [ref=e48]: Н
+                - generic [ref=e49]: А
+                - generic [ref=e50]: Г
+                - generic [ref=e51]: Р
+                - generic [ref=e52]: А
+                - generic [ref=e53]: Ж
+                - generic [ref=e54]: Д
+                - generic [ref=e55]: Е
+                - generic [ref=e56]: Н
+                - generic [ref=e57]: Н
+                - generic [ref=e58]: А
+                - generic [ref=e59]: Я
+                - generic [ref=e61]: К
+                - generic [ref=e62]: О
+                - generic [ref=e63]: М
+                - generic [ref=e64]: П
+                - generic [ref=e65]: А
+                - generic [ref=e66]: Н
+                - generic [ref=e67]: И
+                - generic [ref=e68]: Я
+              - img "About Icon" [ref=e70]
+          - generic [ref=e71]:
+            - generic [ref=e72]:
+              - img "Client Profile Image 1" [ref=e73]
+              - img "Client Profile Image 2" [ref=e74]
+              - img "Client Profile Image 3" [ref=e75]
+              - img "Client Profile Image 4" [ref=e76]
+            - heading "Отзывы от 1.2К клиентов" [level=5] [ref=e654]
+      - img "Slide Image" [ref=e78]
+      - generic [ref=e82]:
+        - generic [ref=e83]:
+          - heading "Строительство" [level=4] [ref=e85]
+          - heading "Архитектура" [level=4] [ref=e87]
+          - heading "Планирование проектов" [level=4] [ref=e89]
+          - heading "Интерьер" [level=4] [ref=e91]
+        - generic [ref=e92]:
+          - heading "Строительство" [level=4] [ref=e94]
+          - heading "Архитектура" [level=4] [ref=e96]
+          - heading "Планирование проектов" [level=4] [ref=e98]
+          - heading "Интерьер" [level=4] [ref=e100]
+        - generic [ref=e101]:
+          - heading "Строительство" [level=4] [ref=e103]
+          - heading "Архитектура" [level=4] [ref=e105]
+          - heading "Планирование проектов" [level=4] [ref=e107]
+          - heading "Интерьер" [level=4] [ref=e109]
+        - generic [ref=e110]:
+          - heading "Строительство" [level=4] [ref=e112]
+          - heading "Архитектура" [level=4] [ref=e114]
+          - heading "Планирование проектов" [level=4] [ref=e116]
+          - heading "Интерьер" [level=4] [ref=e118]
+    - generic [ref=e122]:
+      - generic [ref=e123]:
+        - heading "Точность, заложенная в каждый проект" [level=2] [ref=e125]:
+          - generic [ref=e126]: Точность,
+          - generic [ref=e127]: заложенная
+          - generic [ref=e128]: в
+          - generic [ref=e129]: каждый
+          - generic [ref=e130]: проект
+        - generic:
+          - img "Arrow Image"
+        - generic [ref=e133]:
+          - generic [ref=e134]:
+            - heading "Ясность в каждой линии" [level=5] [ref=e135]
+            - paragraph [ref=e136]: Каждое измерение, граница и высота подтверждены тщательной полевой работой и контролем качества.
+          - generic [ref=e137]:
+            - heading "Точность на основе технологий" [level=5] [ref=e138]
+            - paragraph [ref=e139]: Мы используем современные инструменты для захвата, обработки и доставки реальных данных участка – быстрее и надежнее.
+          - generic [ref=e140]:
+            - heading "Точность, заложенная в каждый проект" [level=5] [ref=e141]
+            - paragraph [ref=e142]: Наша команда понимает региональные нормы, процессы получения разрешений и проблемы с землей в городах и округах.
+        - link "Посетить наши сайты" [ref=e144] [cursor=pointer]:
+          - /url: /contact
+      - generic [ref=e145]:
+        - generic [ref=e147]:
+          - generic [ref=e149]:
+            - generic [ref=e150] [cursor=pointer]:
+              - generic [ref=e152]: Н
+              - generic [ref=e153]: А
+              - generic [ref=e154]: Г
+              - generic [ref=e155]: Р
+              - generic [ref=e156]: А
+              - generic [ref=e157]: Ж
+              - generic [ref=e158]: Д
+              - generic [ref=e159]: Е
+              - generic [ref=e160]: Н
+              - generic [ref=e161]: Н
+              - generic [ref=e162]: А
+              - generic [ref=e163]: Я
+              - generic [ref=e165]: К
+              - generic [ref=e166]: О
+              - generic [ref=e167]: М
+              - generic [ref=e168]: П
+              - generic [ref=e169]: А
+              - generic [ref=e170]: Н
+              - generic [ref=e171]: И
+              - generic [ref=e172]: Я
+            - img "About Icon" [ref=e174]
+          - img "About Image" [ref=e175]
+        - img "About Image" [ref=e176]
+    - generic [ref=e179]:
+      - generic [ref=e180]:
+        - generic [ref=e181]:
+          - heading "Что мы предлагаем" [level=2] [ref=e182]:
+            - generic [ref=e183]: Что
+            - generic [ref=e184]: мы
+            - generic [ref=e185]: предлагаем
+          - paragraph [ref=e186]: Мы хотим, чтобы каждый сотрудник и торговый партнер чувствовали, что они являются частью общего блага и сплоченной команды. Мы помогаем нашим командам формировать более сильные
+        - link "Изучить сейчас" [ref=e188] [cursor=pointer]:
+          - /url: /about
+        - generic:
+          - img "Offer Image"
+      - generic [ref=e192]:
+        - generic [ref=e193]:
+          - generic [ref=e194] [cursor=pointer]:
+            - link "Строительство" [ref=e195]:
+              - /url: /services/construction/
+              - heading "Строительство" [level=4] [ref=e196]
+            - img [ref=e198]
+          - generic [ref=e200]:
+            - img "Строительство" [ref=e202]
+            - generic [ref=e203]:
+              - paragraph [ref=e204]: Мы хотим, чтобы каждый сотрудник и торговый партнер чувствовали, что они являются частью общего блага и сплоченной команды.
+              - link "Посмотреть услугу" [ref=e205] [cursor=pointer]:
+                - /url: /services/construction/
+        - generic [ref=e206]:
+          - generic [ref=e207] [cursor=pointer]:
+            - link "Архитектура" [ref=e208]:
+              - /url: /services/architecture/
+              - heading "Архитектура" [level=4] [ref=e209]
+            - img [ref=e211]
+          - generic:
+            - img "Архитектура" [ref=e215]
+            - generic [ref=e216]:
+              - paragraph [ref=e217]: Наши архитекторы тесно сотрудничают с клиентами, чтобы понять их видение и воплотить его в реальность с помощью передовых инструментов.
+              - link "Посмотреть услугу" [ref=e218] [cursor=pointer]:
+                - /url: /services/architecture/
+        - generic [ref=e219]:
+          - generic [ref=e220] [cursor=pointer]:
+            - link "Планирование проектов" [ref=e221]:
+              - /url: /services/project-planning/
+              - heading "Планирование проектов" [level=4] [ref=e222]
+            - img [ref=e224]
+          - generic:
+            - img "Планирование проектов" [ref=e228]
+            - generic [ref=e229]:
+              - paragraph [ref=e230]: Мы координируем работу со всеми заинтересованными сторонами, обеспечивая четкую коммуникацию, эффективные сроки и экономически выгодные решения.
+              - link "Посмотреть услугу" [ref=e231] [cursor=pointer]:
+                - /url: /services/project-planning/
+        - generic [ref=e232]:
+          - generic [ref=e233] [cursor=pointer]:
+            - link "Интерьер" [ref=e234]:
+              - /url: /services/interior/
+              - heading "Интерьер" [level=4] [ref=e235]
+            - img [ref=e237]
+          - generic:
+            - img "Интерьер" [ref=e241]
+            - generic [ref=e242]:
+              - paragraph [ref=e243]: Наша команда выбирает материалы, цвета и планировки, которые улучшают как эстетику, так и функциональность, обеспечивая пространство.
+              - link "Посмотреть услугу" [ref=e244] [cursor=pointer]:
+                - /url: /services/interior/
+    - generic [ref=e246]:
+      - heading "Рабочий процесс SurveyRidge" [level=2] [ref=e248]:
+        - generic [ref=e249]: Рабочий
+        - generic [ref=e250]: процесс
+        - generic [ref=e251]: SurveyRidge
+      - generic [ref=e252]:
+        - generic [ref=e253] [cursor=pointer]:
+          - img "Process Icon" [ref=e254]
+          - generic [ref=e255]:
+            - heading "Консультация и детали участка" [level=5] [ref=e256]
+            - paragraph [ref=e257]: Мы начинаем с ознакомительной встречи или звонка, чтобы понять ваши цели, расположение участка и технические потребности.
+          - paragraph [ref=e259]: "1"
+        - generic [ref=e260] [cursor=pointer]:
+          - img "Process Icon" [ref=e261]
+          - generic [ref=e262]:
+            - heading "Сбор данных на месте" [level=5] [ref=e263]
+            - paragraph [ref=e264]: Наши лицензированные геодезисты посещают вашу недвижимость, используя GPS, дроны и инструменты промышленного стандарта для сбора данных в реальном времени.
+          - paragraph [ref=e266]: "2"
+        - generic [ref=e267] [cursor=pointer]:
+          - img "Process Icon" [ref=e268]
+          - generic [ref=e269]:
+            - heading "Планирование и чертежи" [level=5] [ref=e270]
+            - paragraph [ref=e271]: Мы создаем четкие, готовые к регулированию планы, включая карты границ, планировки участков и проекты дренажа.
+          - paragraph [ref=e273]: "3"
+        - generic [ref=e274] [cursor=pointer]:
+          - img "Process Icon" [ref=e275]
+          - generic [ref=e276]:
+            - heading "Финальный обзор и доставка" [level=5] [ref=e277]
+            - paragraph [ref=e278]: Мы проводим финальный обзор всех документов и доставляем готовые материалы с полной документацией и рекомендациями.
+          - paragraph [ref=e280]: "4"
+    - generic [ref=e282]:
+      - heading "Мы предоставляем профессиональное строительство" [level=2] [ref=e285]:
+        - generic [ref=e286]: Мы
+        - generic [ref=e287]: предоставляем
+        - generic [ref=e288]: профессиональное
+        - generic [ref=e289]: строительство
+      - generic [ref=e290]:
+        - generic [ref=e291] [cursor=pointer]:
+          - heading "Планировка сельского подразделения" [level=2] [ref=e292]
+          - paragraph [ref=e293]: "Местоположение: Бирмингем"
+          - paragraph [ref=e294]: Выполнена полномасштабная съемка и разбивка участков для проекта конверсии на 80 акрах, обеспечивающая поэтапную застройку с четкими сервитутами.
+        - generic [ref=e295] [cursor=pointer]:
+          - heading "Планировка сельского подразделения" [level=2] [ref=e296]
+          - paragraph [ref=e297]: "Местоположение: Бирмингем"
+          - paragraph [ref=e298]: Выполнена полномасштабная съемка и разбивка участков для проекта конверсии на 80 акрах, обеспечивающая поэтапную застройку с четкими сервитутами.
+        - generic [ref=e299] [cursor=pointer]:
+          - heading "Проект дренажной системы" [level=2] [ref=e300]
+          - paragraph [ref=e301]: "Местоположение: Пригород Манчестера"
+          - paragraph [ref=e302]: Разработана детальная дренажная система и система траншей для зоны с высоким уровнем осадков, включая моделирование стока и проектирование задержания ливневых вод.
+        - generic [ref=e303] [cursor=pointer]:
+          - heading "Проект картографирования реконструкции" [level=2] [ref=e304]
+          - paragraph [ref=e305]: "Местоположение: Бристоль"
+          - paragraph [ref=e306]: Проведено 3D сканирование конструкций и создание ретроспективных чертежей для реконструкции исторического поместья, обеспечивая точность.
+      - img "construction Image" [ref=e309]
+    - generic [ref=e311]:
+      - heading "Познакомьтесь с командой, которая ведет ваш проект" [level=2] [ref=e313]:
+        - generic [ref=e314]: Познакомьтесь
+        - generic [ref=e315]: с
+        - generic [ref=e316]: командой,
+        - generic [ref=e317]: которая
+        - generic [ref=e318]: ведет
+        - generic [ref=e319]: ваш
+        - generic [ref=e320]: проект
+      - generic [ref=e321]:
+        - generic [ref=e322] [cursor=pointer]:
+          - img "Джеймс Уитмор" [ref=e324]
+          - generic [ref=e325]:
+            - heading "Джеймс Уитмор" [level=5] [ref=e326]
+            - separator [ref=e328]
+            - paragraph [ref=e329]: Ведущий инженер-строитель
+        - generic [ref=e330] [cursor=pointer]:
+          - img "Даниэль Родригес" [ref=e332]
+          - generic [ref=e333]:
+            - heading "Даниэль Родригес" [level=5] [ref=e334]
+            - separator [ref=e336]
+            - paragraph [ref=e337]: Инженер по окружающей среде и дренажу
+        - generic [ref=e338] [cursor=pointer]:
+          - img "Оливия Линфорд" [ref=e340]
+          - generic [ref=e341]:
+            - heading "Оливия Линфорд" [level=5] [ref=e342]
+            - separator [ref=e344]
+            - paragraph [ref=e345]: Менеджер по САПР и чертежам
+        - generic [ref=e346] [cursor=pointer]:
+          - img "Мартин Д'Суза" [ref=e348]
+          - generic [ref=e349]:
+            - heading "Мартин Д'Суза" [level=5] [ref=e350]
+            - separator [ref=e352]
+            - paragraph [ref=e353]: Лицензированный землеустроитель
+    - generic [ref=e356]:
+      - heading "Что говорят наши клиенты" [level=2] [ref=e358]
+      - generic [ref=e359]:
+        - generic [ref=e360]:
+          - generic [ref=e361]:
+            - img "Client" [ref=e362]
+            - img "Client" [ref=e363]
+            - img "Client" [ref=e364]
+            - img "Client" [ref=e365]
+          - generic [ref=e366]:
+            - generic [ref=e367]:
+              - generic [ref=e368]: "4.8"
+              - generic [ref=e369]:
+                - img [ref=e370]
+                - img [ref=e372]
+                - img [ref=e374]
+                - img [ref=e376]
+                - img [ref=e378]
+            - paragraph [ref=e380]: из 0+ отзывов
+        - generic [ref=e381]:
+          - generic [ref=e385]:
+            - generic [ref=e387]:
+              - img "Quote Icon" [ref=e388]
+              - paragraph [ref=e389]: “Профессионально, точно и надежно. Команда предоставила детальные планировки участков, которые помогли нам двигаться вперед с уверенностью. Они справились со всем - от полевых работ до финальных планов.”
+              - generic [ref=e390]:
+                - img "Арлин Маккой" [ref=e391]
+                - generic [ref=e392]:
+                  - heading "Арлин Маккой" [level=4] [ref=e393]
+                  - paragraph [ref=e394]: Генеральный директор в saira
+            - generic [ref=e396]:
+              - img "Quote Icon" [ref=e397]
+              - paragraph [ref=e398]: “Превосходный сервис и внимание к деталям. Их экспертиза в землеустройстве и планировании участков превзошла наши ожидания. Команда была отзывчивой и предоставила результаты вовремя.”
+              - generic [ref=e399]:
+                - img "Джон Смит" [ref=e400]
+                - generic [ref=e401]:
+                  - heading "Джон Смит" [level=4] [ref=e402]
+                  - paragraph [ref=e403]: Менеджер проектов в BuildCo
+            - generic [ref=e405]:
+              - img "Quote Icon" [ref=e406]
+              - paragraph [ref=e407]: “Высокопрофессиональная команда с отличными техническими навыками. Они предоставили комплексные решения по дренажу и анализу участка, которые сделали наш проект успешным.”
+              - generic [ref=e408]:
+                - img "Сара Джонсон" [ref=e409]
+                - generic [ref=e410]:
+                  - heading "Сара Джонсон" [level=4] [ref=e411]
+                  - paragraph [ref=e412]: Директор в Urban Developers
+            - generic [ref=e414]:
+              - img "Quote Icon" [ref=e415]
+              - paragraph [ref=e416]: “Исключительное качество и надежность. Их геодезические работы были тщательными и точными, помогая нам избежать дорогостоящих ошибок во время строительства. Очень рекомендую их услуги.”
+              - generic [ref=e417]:
+                - img "Майкл Браун" [ref=e418]
+                - generic [ref=e419]:
+                  - heading "Майкл Браун" [level=4] [ref=e420]
+                  - paragraph [ref=e421]: Генеральный директор в Construct Ltd
+          - generic [ref=e422]:
+            - button "Previous" [ref=e423] [cursor=pointer]:
+              - img [ref=e424]
+            - button "Next" [ref=e426] [cursor=pointer]:
+              - img [ref=e427]
+    - generic [ref=e431]:
+      - generic [ref=e433]:
+        - generic [ref=e434]:
+          - img "Faq Image"
+          - img "Faq Image"
+        - generic [ref=e437]:
+          - img "Faq Image"
+          - img "Faq Image"
+      - generic [ref=e440]:
+        - generic [ref=e441]:
+          - heading "Все, что вам нужно знать" [level=2] [ref=e442]:
+            - generic [ref=e443]: Все,
+            - generic [ref=e444]: что
+            - generic [ref=e445]: вам
+            - generic [ref=e446]: нужно
+            - generic [ref=e447]: знать
+          - paragraph [ref=e448]: Изучите наш раздел FAQ, чтобы получить четкие, подробные ответы о процессе SurveyRidge, услугах, сроках и о том, чего можно ожидать при работе с нашей командой надежных геодезистов недвижимости.
+        - generic [ref=e449]:
+          - generic [ref=e450]:
+            - generic [ref=e451] [cursor=pointer]:
+              - heading "Какие типы земельных съемок вы предлагаете?" [level=4] [ref=e452]
+              - img [ref=e454]
+            - paragraph [ref=e457]: Мы предоставляем полный спектр съемок, включая межевые съемки, топографическое картирование, съемки строительной планировки, съемки подразделений и необходимую юридическую документацию.
+          - generic [ref=e458]:
+            - generic [ref=e459] [cursor=pointer]:
+              - heading "Сколько времени занимает типичная съемка" [level=4] [ref=e460]
+              - img [ref=e462]
+            - paragraph [ref=e464]: Большинство жилых съемок завершаются в течение нескольких дней, в то время как более крупные или более детальные проекты могут занять от одной до двух недель.
+          - generic [ref=e465]:
+            - generic [ref=e466] [cursor=pointer]:
+              - heading "Нужна ли мне земельная съемка перед покупкой или продажей недвижимости" [level=4] [ref=e467]
+              - img [ref=e469]
+            - paragraph [ref=e471]: Да. Земельная съемка предоставляет точную картину границ недвижимости, сервитутов и потенциальных проблем.
+          - generic [ref=e472]:
+            - generic [ref=e473] [cursor=pointer]:
+              - heading "Можете ли вы обработать требования по разрешениям и зонированию" [level=4] [ref=e474]
+              - img [ref=e476]
+            - paragraph [ref=e478]: Абсолютно. Наша команда имеет опыт работы с местными разрешениями и правилами зонирования. Мы подготавливаем необходимые документы, координируем работу с муниципалитетами.
+    - generic [ref=e481]:
+      - generic [ref=e482]:
+        - generic [ref=e483]:
+          - heading "Свяжитесь с нами" [level=2] [ref=e485]:
+            - generic [ref=e486]: Свяжитесь
+            - generic [ref=e487]: с
+            - generic [ref=e488]: нами
+          - img "Arrow Image"
+        - generic [ref=e490]:
+          - generic [ref=e491]:
+            - heading "Телефон" [level=5] [ref=e492]
+            - paragraph [ref=e493]:
+              - link "+1 (212) 555-9876" [ref=e494] [cursor=pointer]:
+                - /url: tel:+1 (212) 555-9876
+          - generic [ref=e495]:
+            - heading "Электронная почта" [level=5] [ref=e496]
+            - paragraph [ref=e497]:
+              - link "info@surveyridge.com" [ref=e498] [cursor=pointer]:
+                - /url: mailto:info@surveyridge.com
+          - generic [ref=e499]:
+            - heading "Адрес офиса" [level=5] [ref=e500]
+            - paragraph [ref=e501]: 6391 Elgin St. Celina, Delaware 10299
+          - generic [ref=e502]:
+            - heading "Часы работы" [level=5] [ref=e503]
+            - paragraph [ref=e504]: "Пн - Пт: 9:00 - 18:00"
+            - paragraph [ref=e505]: "Сб: 10:00 - 14:00"
+      - generic [ref=e506]:
+        - paragraph [ref=e507]: Мы хотим, чтобы каждый сотрудник и торговый партнер чувствовали, что они являются частью общего блага, каждый сотрудник и торговый партнер чувствуют, что они являются частью общего блага
+        - heading "Давайте работать вместе" [level=2] [ref=e509]:
+          - generic [ref=e510]: Давайте
+          - generic [ref=e511]: работать
+          - generic [ref=e512]: вместе
+        - generic [ref=e513]:
+          - generic [ref=e514]:
+            - generic [ref=e515]:
+              - generic [ref=e516]: Полное имя
+              - textbox "Введите имя" [ref=e517]
+            - generic [ref=e518]:
+              - generic [ref=e519]: Адрес электронной почты
+              - textbox "Введите адрес электронной почты" [ref=e520]
+          - generic [ref=e521]:
+            - generic [ref=e522]:
+              - generic [ref=e523]: Номер телефона
+              - textbox "Введите номер телефона" [ref=e524]
+            - generic [ref=e525]:
+              - generic [ref=e526]: Услуга
+              - generic [ref=e527]:
+                - combobox [ref=e528]:
+                  - option "Выберите услугу" [disabled] [selected]
+                  - option "Строительство"
+                  - option "Архитектура"
+                  - option "Планирование проектов"
+                  - option "Интерьер"
+                - img
+          - generic [ref=e529]:
+            - generic [ref=e530]: Сообщение
+            - textbox "Введите ваше сообщение" [ref=e531]
+          - button "Отправить сейчас" [ref=e533] [cursor=pointer]
+    - generic [ref=e536]:
+      - generic [ref=e537]:
+        - heading "Инсайты с поля от профессионалов" [level=2] [ref=e539]:
+          - generic [ref=e540]: Инсайты
+          - generic [ref=e541]: с
+          - generic [ref=e542]: поля
+          - generic [ref=e543]: от
+          - generic [ref=e544]: профессионалов
+        - link "Все блоги" [ref=e545] [cursor=pointer]:
+          - /url: /blogs
+      - generic [ref=e546]:
+        - link "Как межевые съемки предотвращают споры о недвижимости Как межевые съемки предотвращают споры о недвижимости Итан Джонс Итан Джонс 1 авг 2025 Мы разбираем, как точные земельные съемки защищают ваши права собственности и привносят ясность в границы недвижимости." [ref=e547] [cursor=pointer]:
+          - /url: /blogs/how-boundary-surveys-prevent-property-disputes/
+          - generic [ref=e548]:
+            - img "Как межевые съемки предотвращают споры о недвижимости" [ref=e550]
+            - generic [ref=e551]:
+              - heading "Как межевые съемки предотвращают споры о недвижимости" [level=5] [ref=e552]
+              - generic [ref=e553]:
+                - generic [ref=e554]:
+                  - img "Итан Джонс" [ref=e555]
+                  - paragraph [ref=e556]: Итан Джонс
+                - paragraph [ref=e557]: 1 авг 2025
+          - paragraph [ref=e558]: Мы разбираем, как точные земельные съемки защищают ваши права собственности и привносят ясность в границы недвижимости.
+          - separator [ref=e559]
+        - link "Что нужно знать перед строительством вашей недвижимости Что нужно знать перед строительством вашей недвижимости Майкл Картер Майкл Картер 2 фев 2025 Начало проекта недвижимости без должных знаний часто может привести к неожиданным вызовам. От понимания земельных съемок и юридических границ до планирования." [ref=e560] [cursor=pointer]:
+          - /url: /blogs/what-you-should-know-before-building-your-property/
+          - generic [ref=e561]:
+            - img "Что нужно знать перед строительством вашей недвижимости" [ref=e563]
+            - generic [ref=e564]:
+              - heading "Что нужно знать перед строительством вашей недвижимости" [level=5] [ref=e565]
+              - generic [ref=e566]:
+                - generic [ref=e567]:
+                  - img "Майкл Картер" [ref=e568]
+                  - paragraph [ref=e569]: Майкл Картер
+                - paragraph [ref=e570]: 2 фев 2025
+          - paragraph [ref=e571]: Начало проекта недвижимости без должных знаний часто может привести к неожиданным вызовам. От понимания земельных съемок и юридических границ до планирования.
+          - separator [ref=e572]
+        - link "Гражданское строительство не должно ошибаться в этих темах Гражданское строительство не должно ошибаться в этих темах Майкл Картер Майкл Картер 10 авг 2025 Проекты гражданского строительства требуют точности, и даже небольшие ошибки могут превратиться в серьезные риски. Этот блог исследует некоторые из наиболее упускаемых тем в этой области." [ref=e573] [cursor=pointer]:
+          - /url: /blogs/civil-engineering-shouldnt-mistakes-this-topics/
+          - generic [ref=e574]:
+            - img "Гражданское строительство не должно ошибаться в этих темах" [ref=e576]
+            - generic [ref=e577]:
+              - heading "Гражданское строительство не должно ошибаться в этих темах" [level=5] [ref=e578]
+              - generic [ref=e579]:
+                - generic [ref=e580]:
+                  - img "Майкл Картер" [ref=e581]
+                  - paragraph [ref=e582]: Майкл Картер
+                - paragraph [ref=e583]: 10 авг 2025
+          - paragraph [ref=e584]: Проекты гражданского строительства требуют точности, и даже небольшие ошибки могут превратиться в серьезные риски. Этот блог исследует некоторые из наиболее упускаемых тем в этой области.
+          - separator [ref=e585]
+    - contentinfo [ref=e586]:
+      - generic [ref=e587]:
+        - generic [ref=e588]:
+          - generic [ref=e589]:
+            - heading "Быстрые ссылки" [level=4] [ref=e590]
+            - list [ref=e591]:
+              - listitem [ref=e592]:
+                - link "Главная" [ref=e593] [cursor=pointer]:
+                  - /url: /
+              - listitem [ref=e594]:
+                - link "О нас" [ref=e595] [cursor=pointer]:
+                  - /url: /about/
+              - listitem [ref=e596]:
+                - link "Блог" [ref=e597] [cursor=pointer]:
+                  - /url: /blogs/
+              - listitem [ref=e598]:
+                - link "Проекты" [ref=e599] [cursor=pointer]:
+                  - /url: /projects/
+          - generic [ref=e600]:
+            - heading "Услуги" [level=4] [ref=e601]
+            - list [ref=e602]:
+              - listitem [ref=e603]:
+                - link "3D сканирование и картографирование" [ref=e604] [cursor=pointer]:
+                  - /url: /services/
+              - listitem [ref=e605]:
+                - link "Проектирование коммуникаций и дренажа" [ref=e606] [cursor=pointer]:
+                  - /url: /services/
+              - listitem [ref=e607]:
+                - link "Планировка подразделений" [ref=e608] [cursor=pointer]:
+                  - /url: /services/
+              - listitem [ref=e609]:
+                - link "Планирование участка" [ref=e610] [cursor=pointer]:
+                  - /url: /contact/
+          - generic [ref=e611]:
+            - heading "Полезные ссылки" [level=4] [ref=e612]
+            - list [ref=e613]:
+              - listitem [ref=e614]:
+                - link "Условия использования" [ref=e615] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=e616]:
+                - link "Лицензия" [ref=e617] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=e618]:
+                - link "Журнал изменений" [ref=e619] [cursor=pointer]:
+                  - /url: "#"
+              - listitem [ref=e620]:
+                - link "Руководство по стилю" [ref=e621] [cursor=pointer]:
+                  - /url: /contact/
+          - generic [ref=e622]:
+            - heading "Подпишитесь на рассылку" [level=4] [ref=e623]
+            - generic [ref=e624]:
+              - textbox "Электронная почта" [ref=e626]
+              - button "Отправить" [ref=e627] [cursor=pointer]
+        - link "Logo" [ref=e629] [cursor=pointer]:
+          - /url: /
+          - img "Logo" [ref=e630]
+        - generic [ref=e631]:
+          - paragraph [ref=e633]:
+            - text: Авторские права © 2026
+            - strong [ref=e634]: DesignToCodes
+            - text: . Все права защищены
+          - generic [ref=e636]:
+            - link [ref=e637] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e638]
+            - link [ref=e640] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e641]
+            - link [ref=e643] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e644]
+            - link [ref=e646] [cursor=pointer]:
+              - /url: "#"
+              - img [ref=e647]
+  - alert [ref=e655]
+```

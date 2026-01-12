@@ -16,6 +16,11 @@ export async function POST(request: NextRequest) {
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
     const chatId = process.env.TELEGRAM_CHAT_ID;
 
+    console.log("=== Telegram API Debug ===");
+    console.log("Bot Token:", botToken ? "✅ Налаштовано" : "❌ Відсутній");
+    console.log("Chat ID:", chatId || "❌ Відсутній");
+    console.log("Form Data:", { name, phone, email, size });
+
     if (!botToken) {
       console.error("TELEGRAM_BOT_TOKEN не налаштовано");
       return NextResponse.json(
@@ -45,8 +50,32 @@ ${email ? `📧 <b>Email:</b> ${email}` : ""}
     })}
     `.trim();
 
-    // Якщо вказано chatId, відправляємо туди, інакше використовуємо getUpdates для отримання chat_id
-    if (chatId) {
+    // Якщо chatId не вказано, спробуємо отримати його автоматично
+    let finalChatId = chatId;
+    
+    if (!finalChatId) {
+      console.log("Chat ID не знайдено, спробуємо отримати через getUpdates...");
+      try {
+        const updatesUrl = `https://api.telegram.org/bot${botToken}/getUpdates`;
+        const updatesResponse = await fetch(updatesUrl);
+        const updatesData = await updatesResponse.json();
+        
+        if (updatesData.ok && updatesData.result && updatesData.result.length > 0) {
+          // Беремо останнє повідомлення
+          const lastUpdate = updatesData.result[updatesData.result.length - 1];
+          if (lastUpdate.message && lastUpdate.message.chat) {
+            finalChatId = lastUpdate.message.chat.id.toString();
+            console.log(`Знайдено Chat ID: ${finalChatId}`);
+            console.log(`⚠️  Додайте це значення в .env.local: TELEGRAM_CHAT_ID=${finalChatId}`);
+          }
+        }
+      } catch (error) {
+        console.error("Помилка отримання Chat ID:", error);
+      }
+    }
+
+    // Відправляємо повідомлення, якщо знайшли chat_id
+    if (finalChatId) {
       const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
       
       const response = await fetch(telegramUrl, {
@@ -55,7 +84,7 @@ ${email ? `📧 <b>Email:</b> ${email}` : ""}
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          chat_id: chatId,
+          chat_id: finalChatId,
           text: message,
           parse_mode: "HTML",
         }),
@@ -63,26 +92,32 @@ ${email ? `📧 <b>Email:</b> ${email}` : ""}
 
       const data = await response.json();
 
+      console.log("Telegram API Response:", JSON.stringify(data, null, 2));
+
       if (!response.ok || !data.ok) {
         console.error("Помилка відправки в Telegram:", data);
         return NextResponse.json(
-          { error: "Помилка відправки повідомлення" },
+          { error: `Помилка відправки повідомлення: ${data.description || "невідома помилка"}` },
           { status: 500 }
         );
       }
 
-      return NextResponse.json({ success: true, message: "Замовлення успішно відправлено!" });
+      console.log("✅ Повідомлення успішно відправлено в Telegram!");
+      return NextResponse.json({ 
+        success: true, 
+        message: "Замовлення успішно відправлено в Telegram!" 
+      });
     } else {
-      // Якщо chatId не вказано, повертаємо інструкцію
-      console.warn("TELEGRAM_CHAT_ID не налаштовано. Повідомлення не відправлено.");
+      // Якщо chatId все ще не знайдено
+      console.warn("TELEGRAM_CHAT_ID не налаштовано і не вдалося отримати автоматично.");
       console.log("Дані замовлення:", { name, phone, email, size });
+      console.log("Інструкція: Напишіть боту @surveyridgebot в Telegram, потім запустіть: node scripts/get-telegram-chat-id.js");
       
-      // Можна також спробувати отримати chat_id через getUpdates
-      // Але для цього потрібно спочатку написати боту в Telegram
       return NextResponse.json(
         { 
-          success: true, 
-          message: "Замовлення прийнято! (Chat ID не налаштовано - перевірте .env.local)" 
+          success: false,
+          error: "Chat ID не налаштовано. Напишіть боту @surveyridgebot в Telegram та додайте Chat ID в .env.local",
+          instruction: "1. Напишіть боту @surveyridgebot в Telegram\n2. Запустіть: node scripts/get-telegram-chat-id.js\n3. Додайте Chat ID в .env.local"
         },
         { status: 200 }
       );
