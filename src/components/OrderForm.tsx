@@ -9,6 +9,11 @@ export default function OrderForm() {
     email: "",
     size: "155*210",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{
+    type: "success" | "error" | null;
+    message: string;
+  }>({ type: null, message: "" });
 
   const sizes = [
     { value: "155*210", label: "Полуторний 155*210", price: "1050 грн" },
@@ -16,10 +21,49 @@ export default function OrderForm() {
     { value: "200*220", label: "Євро 200*220", price: "1150 грн" },
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Тут буде логіка відправки форми
-    alert("Дякуємо за замовлення! Наш менеджер зв'яжеться з вами найближчим часом.");
+    setIsSubmitting(true);
+    setSubmitStatus({ type: null, message: "" });
+
+    try {
+      const response = await fetch("/api/telegram", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setSubmitStatus({
+          type: "success",
+          message: "Дякуємо за замовлення! Наш менеджер зв'яжеться з вами найближчим часом.",
+        });
+        // Очищаємо форму після успішної відправки
+        setFormData({
+          name: "",
+          phone: "",
+          email: "",
+          size: "155*210",
+        });
+      } else {
+        setSubmitStatus({
+          type: "error",
+          message: data.error || "Помилка відправки замовлення. Спробуйте ще раз.",
+        });
+      }
+    } catch (error) {
+      console.error("Помилка відправки форми:", error);
+      setSubmitStatus({
+        type: "error",
+        message: "Помилка з'єднання. Перевірте інтернет-з'єднання та спробуйте ще раз.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const selectedSize = sizes.find((s) => s.value === formData.size);
@@ -128,12 +172,30 @@ export default function OrderForm() {
                 />
               </div>
 
+              {/* Status Message */}
+              {submitStatus.type && (
+                <div
+                  className={`mb-4 p-4 rounded-lg ${
+                    submitStatus.type === "success"
+                      ? "bg-green-50 text-green-800 border border-green-200"
+                      : "bg-red-50 text-red-800 border border-red-200"
+                  }`}
+                >
+                  <p className="font-semibold text-center">{submitStatus.message}</p>
+                </div>
+              )}
+
               {/* Submit Button */}
               <button
                 type="submit"
-                className="w-full bg-orange-600 text-white py-4 px-6 rounded-full hover:bg-orange-700 transition-colors font-bold text-lg md:text-xl shadow-lg"
+                disabled={isSubmitting}
+                className={`w-full py-4 px-6 rounded-full transition-colors font-bold text-lg md:text-xl shadow-lg ${
+                  isSubmitting
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-orange-600 hover:bg-orange-700"
+                } text-white`}
               >
-                Замовити
+                {isSubmitting ? "Відправка..." : "Замовити"}
               </button>
 
               <p className="text-center text-gray-600 text-sm mt-4">
