@@ -1,111 +1,36 @@
-# Top Home Shop - Ковдра з овечої вовни
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-Сучасний інтернет-магазин для продажу ковдр з овечої вовни, створений на Next.js з повною адаптивністю для мобільних та десктопних пристроїв.
+## Getting Started
 
-## Технології
-
-- **Next.js 16** - React фреймворк з App Router
-- **TypeScript** - Типізація коду
-- **Tailwind CSS** - Стилізація та адаптивний дизайн
-- **Responsive Design** - Повна підтримка мобільних та десктопних пристроїв
-
-## Структура проекту
-
-```
-src/
-├── app/
-│   ├── api/
-│   │   └── telegram/
-│   │       └── route.ts  # API endpoint для відправки на Telegram
-│   ├── layout.tsx         # Основний layout з метаданими
-│   ├── page.tsx           # Головна сторінка
-│   └── globals.css        # Глобальні стилі
-└── components/
-    ├── Header.tsx         # Навігаційне меню
-    ├── Hero.tsx           # Головна секція з пропозицією
-    ├── Features.tsx       # Секція переваг
-    ├── About.tsx          # Про ковдру
-    ├── Reviews.tsx        # Відгуки клієнтів
-    ├── FAQ.tsx            # Часті питання
-    ├── OrderForm.tsx      # Форма замовлення
-    └── Footer.tsx         # Підвал сайту
-```
-
-## Запуск проекту
-
-### Розробка
+First, run the development server:
 
 ```bash
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-Відкрийте [http://localhost:3000](http://localhost:3000) у вашому браузері.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-### Продакшн build
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-```bash
-npm run build
-npm start
-```
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Особливості
+## Learn More
 
-✅ Повністю адаптивний дизайн для мобільних та десктопних пристроїв  
-✅ Сучасний UI/UX дизайн  
-✅ Форма замовлення з вибором розміру ковдри  
-✅ **Інтеграція з Telegram ботом для отримання замовлень**  
-✅ Інтерактивна секція FAQ з акордеоном  
-✅ Плавна прокрутка навігації  
-✅ Оптимізована продуктивність  
-✅ SEO-friendly структура  
+To learn more about Next.js, take a look at the following resources:
 
-## Основні секції
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-1. **Головна секція (Hero)** - Приваблива пропозиція зі знижкою
-2. **Переваги** - 4 основні переваги ковдри
-3. **Про ковдру** - Детальна інформація про продукт
-4. **Відгуки** - Реальні відгуки від клієнтів
-5. **FAQ** - Відповіді на часті питання
-6. **Форма замовлення** - Форма з вибором розміру та контактних даних
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Налаштування Telegram бота
+## Deploy on Vercel
 
-Проект налаштований для відправки замовлень на Telegram бот.
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-### Крок 1: Отримати Chat ID
-
-1. Напишіть будь-яке повідомлення вашому боту в Telegram: [@surveyridgebot](https://t.me/surveyridgebot)
-2. Запустіть скрипт для отримання Chat ID:
-   ```bash
-   node scripts/get-telegram-chat-id.js
-   ```
-3. Скопіюйте отриманий Chat ID
-
-### Крок 2: Налаштувати .env.local
-
-Файл `.env.local` вже створено з токеном бота. Додайте ваш Chat ID:
-
-```env
-TELEGRAM_BOT_TOKEN=8555898660:AAGACcEFsN5akhBXgtBUowjscQpZl28CMJ8
-TELEGRAM_CHAT_ID=ваш_chat_id_тут
-```
-
-**Важливо:** Файл `.env.local` не потрапляє в git (вже в .gitignore), тому токени безпечні.
-
-### Крок 3: Перезапустити сервер
-
-Після додавання Chat ID перезапустіть dev сервер:
-```bash
-npm run dev
-```
-
-Тепер всі замовлення з форми будуть автоматично відправлятися в Telegram!
-
-## Наступні кроки для інтеграції
-
-1. ✅ Підключено Telegram бот для обробки замовлень
-2. Додати інтеграцію з Новою Поштою/Укрпоштою
-3. Додати систему оплати
-4. Інтегрувати з CRM системою
-5. Додати аналітику (Google Analytics)
-6. Додати більше зображень продуктів
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
