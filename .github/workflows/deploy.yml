@@ -26,10 +26,13 @@ jobs:
           SERVER_PATH: ${{ secrets.SERVER_PATH }}
         run: |
           set -e
+          unset SSH_AUTH_SOCK SSH_AGENT_PID
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+          printf 'Host %s\n  IdentityFile ~/.ssh/deploy_key\n  IdentitiesOnly yes\n' "$SSH_HOST" >> ~/.ssh/config
+          chmod 600 ~/.ssh/config
 
           rsync -avz --delete \
             --exclude 'node_modules' \
