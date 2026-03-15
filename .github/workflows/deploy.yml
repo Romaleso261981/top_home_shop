@@ -1,0 +1,50 @@
+name: Deploy to hosting
+
+on:
+  push:
+    branches: [main, master]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check deployment secrets
+        run: |
+          if [ -z "${{ secrets.SSH_PRIVATE_KEY }}" ] || [ -z "${{ secrets.SSH_HOST }}" ] || [ -z "${{ secrets.SSH_USERNAME }}" ] || [ -z "${{ secrets.SERVER_PATH }}" ]; then
+            echo "::error::Додайте секрети: SSH_PRIVATE_KEY, SSH_HOST, SSH_USERNAME, SERVER_PATH. Див. DEPLOY.md"
+            exit 1
+          fi
+
+      - name: Deploy via SSH (rsync + build on server)
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+          SERVER_PATH: ${{ secrets.SERVER_PATH }}
+        run: |
+          set -e
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
+
+          rsync -avz --delete \
+            --exclude 'node_modules' \
+            --exclude '.next' \
+            --exclude '.git' \
+            --exclude '.env' \
+            --exclude '.env.*' \
+            --exclude '.cursor' \
+            --exclude '*.log' \
+            --exclude '.DS_Store' \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+            ./ ${SSH_USERNAME}@${SSH_HOST}:${SERVER_PATH}/
+
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no \
+            ${SSH_USERNAME}@${SSH_HOST} \
+            "cd ${SERVER_PATH} && npm install && npm run build"
+
+          rm -f ~/.ssh/deploy_key
