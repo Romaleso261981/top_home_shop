@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const navItems = [
   { label: "Головна", href: "/" },
   { label: "Послуги", href: "#services" },
@@ -145,7 +147,7 @@ export function Header() {
       {/* Main nav bar */}
       <div>
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-          <a href="/" className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
             <div className="grid h-9 w-9 place-items-center rounded bg-slate-700 text-slate-100">
               <span className="text-sm font-bold">M</span>
             </div>
@@ -153,7 +155,7 @@ export function Header() {
               <div className="text-sm font-semibold">Моноліт</div>
               <div className="text-[11px] text-slate-300">Промислові підлоги</div>
             </div>
-          </a>
+          </Link>
 
           <nav className="hidden items-center gap-6 text-sm text-slate-200 md:flex">
             {navItems.map((item) => (
