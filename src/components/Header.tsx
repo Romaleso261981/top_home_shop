@@ -104,20 +104,22 @@ export function Header() {
       <div className="border-b border-white/10">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-200/90">
-            <a
-              href="tel:+380965984470"
-              className="inline-flex items-center gap-2 hover:text-white"
-            >
-              <IconPhone className="h-4 w-4 opacity-90" />
-              +38 (096) 598 44 70
-            </a>
-            <a
-              href="tel:+380673823099"
-              className="inline-flex items-center gap-2 hover:text-white"
-            >
-              <IconPhone className="h-4 w-4 opacity-90" />
-              +38 (067) 382 30 99
-            </a>
+            <div className="flex flex-col gap-1">
+              <a
+                href="tel:+380965984470"
+                className="inline-flex items-center gap-2 hover:text-white"
+              >
+                <IconPhone className="h-4 w-4 opacity-90" />
+                +38 (096) 598 44 70
+              </a>
+              <a
+                href="tel:+380673823099"
+                className="inline-flex items-center gap-2 hover:text-white"
+              >
+                <IconPhone className="h-4 w-4 opacity-90" />
+                +38 (067) 382 30 99
+              </a>
+            </div>
             <a
               href="mailto:monolitrvua@gmail.com"
               className="inline-flex items-center gap-2 hover:text-white"
