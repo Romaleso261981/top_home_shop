@@ -7,8 +7,8 @@ export function HeroSection() {
           Послуги • Промислові підлоги
         </p>
         <h1 className="mt-4 text-center text-2xl font-bold leading-snug text-slate-900 sm:text-3xl lg:text-4xl">
-          Влаштування бетонних промислових<br className="hidden sm:block" />
-          шліфованих підлог та стяжок
+          Влаштування Бетонних Шліфованих Підлог,<br className="hidden sm:block" />
+          Стяжок
         </h1>
 
         <p className="mt-3 text-center text-xs text-slate-500 sm:text-sm">
