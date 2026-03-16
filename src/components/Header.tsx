@@ -117,7 +117,7 @@ export function Header() {
                 className="inline-flex items-center gap-2 hover:text-white"
               >
                 <IconPhone className="h-4 w-4 opacity-90" />
-                +38 (067) 382 30 99
+                +38 (067) 382 30 23
               </a>
             </div>
             <a
