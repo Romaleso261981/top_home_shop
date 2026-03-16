@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Статичний експорт для деплою на Apache
+  output: "export",
 };
 
 export default nextConfig;

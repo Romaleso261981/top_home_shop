@@ -18,7 +18,13 @@ jobs:
             exit 1
           fi
 
-      - name: Deploy via SSH (rsync + build on server)
+      - name: Build & export static site
+        run: |
+          npm install
+          npm run build
+          npm run export
+
+      - name: Deploy via SSH (upload static out/ directory)
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
@@ -26,7 +32,6 @@ jobs:
           SERVER_PATH: ${{ secrets.SERVER_PATH }}
         run: |
           set -e
-          unset SSH_AUTH_SOCK SSH_AGENT_PID
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
@@ -35,19 +40,7 @@ jobs:
           chmod 600 ~/.ssh/config
 
           rsync -avz --delete \
-            --exclude 'node_modules' \
-            --exclude '.next' \
-            --exclude '.git' \
-            --exclude '.env' \
-            --exclude '.env.*' \
-            --exclude '.cursor' \
-            --exclude '*.log' \
-            --exclude '.DS_Store' \
             -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o IdentitiesOnly=yes" \
-            ./ ${SSH_USERNAME}@${SSH_HOST}:${SERVER_PATH}/
-
-          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o IdentitiesOnly=yes \
-            ${SSH_USERNAME}@${SSH_HOST} \
-            "cd ${SERVER_PATH} && npm install && npm run build"
+            ./out/ ${SSH_USERNAME}@${SSH_HOST}:${SERVER_PATH}/
 
           rm -f ~/.ssh/deploy_key
