@@ -1,8 +1,14 @@
 export function HeroSection() {
   return (
-    <section className="mb-12 overflow-hidden rounded-2xl bg-gradient-to-r from-slate-100 to-slate-200 px-6 py-12 shadow-sm sm:px-10 lg:mb-16 lg:py-16">
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,_#e5e7eb,_transparent_55%),radial-gradient(circle_at_bottom_right,_#d1d5db,_transparent_55%)]" />
-      <div className="relative">
+    <section
+      className="relative overflow-hidden bg-slate-100 py-10 sm:py-14 lg:py-16"
+      style={{
+        backgroundImage: 'url("/fon-stranic-min.jpg")',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
+      <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-500">
           Послуги • Промислові підлоги
         </p>
