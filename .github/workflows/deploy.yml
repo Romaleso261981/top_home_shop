@@ -22,7 +22,6 @@ jobs:
         run: |
           npm install
           npm run build
-          npm run export
 
       - name: Deploy via SSH (upload static out/ directory)
         env:
