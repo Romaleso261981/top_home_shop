@@ -10,7 +10,7 @@ export function MaterialSelectionSection({
   items,
 }: MaterialSelectionSectionProps) {
   return (
-    <section className="mb-12 bg-white py-8">
+    <section className="mb-12">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <h2 className="text-2xl font-semibold text-zinc-900 sm:text-3xl">{title}</h2>
 
