@@ -1,3 +1,5 @@
+import { ctaButtonClass } from "@/components/buttonStyles";
+
 type FeedbackFormSectionProps = {
   title: string;
   buttonText: string;
@@ -38,7 +40,7 @@ export function FeedbackFormSection({
           <div className="mt-8 flex justify-center">
             <button
               type="submit"
-              className="min-w-[280px] bg-[linear-gradient(90deg,#0b6e95_0%,#15a8d6_100%)] px-8 py-4 text-lg font-semibold text-white shadow-sm transition hover:brightness-105"
+              className={`${ctaButtonClass} min-w-[280px]`}
             >
               {buttonText}
             </button>

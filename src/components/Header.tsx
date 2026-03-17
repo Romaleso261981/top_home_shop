@@ -1,3 +1,5 @@
+import { ctaButtonClass } from "@/components/buttonStyles";
+
 function IconPhone(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -68,7 +70,7 @@ export function Header() {
 
           <a
             href="#contact"
-            className="inline-flex w-full items-center justify-center rounded-md bg-sky-500 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-sky-600 sm:w-auto"
+            className={`${ctaButtonClass} w-full px-4 py-3 text-xs uppercase tracking-wide sm:w-auto`}
           >
             Замовити дзвінок
           </a>

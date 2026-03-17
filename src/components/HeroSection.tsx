@@ -1,3 +1,5 @@
+import { ctaButtonClass } from "@/components/buttonStyles";
+
 export function HeroSection() {
   return (
     <section
@@ -26,13 +28,13 @@ export function HeroSection() {
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
           <a
             href="tel:+380965984470"
-            className="inline-flex items-center justify-center rounded-full bg-emerald-600 px-8 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700"
+            className={`${ctaButtonClass} min-w-[260px] text-sm`}
           >
             Зателефонувати менеджеру
           </a>
           <a
             href="#contact"
-            className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white/60 px-8 py-3 text-sm font-semibold text-slate-800 backdrop-blur-sm transition hover:border-slate-400 hover:bg-white"
+            className={`${ctaButtonClass} min-w-[260px] text-sm`}
           >
             Отримати комерційну пропозицію
           </a>
