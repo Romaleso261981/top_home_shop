@@ -1,12 +1,3 @@
-const navItems = [
-  { label: "Головна", href: "/" },
-  { label: "Послуги", href: "#services" },
-  { label: "Портфоліо", href: "#portfolio" },
-  { label: "Новини", href: "#news" },
-  { label: "Про компанію", href: "#about" },
-  { label: "Контакти", href: "#contact" },
-];
-
 function IconPhone(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
