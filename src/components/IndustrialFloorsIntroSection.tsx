@@ -6,10 +6,16 @@ type IndustrialFloorsIntroSectionProps = {
    * Працює разом з object-none (картинка не масштабується).
    */
   imagePosition?: string;
+
+  /**
+   * Текст секції (кожен елемент масиву — окремий абзац).
+   */
+  paragraphs: string[];
 };
 
 export function IndustrialFloorsIntroSection({
   imagePosition = "center",
+  paragraphs,
 }: IndustrialFloorsIntroSectionProps) {
   return (
     <section className="mb-12 bg-white shadow-sm sm:rounded-2xl sm:px-10 sm:py-8">
@@ -30,24 +36,16 @@ export function IndustrialFloorsIntroSection({
         </div>
 
         <div className="px-4 pb-6 sm:px-0 sm:pb-0">
-          <p className="text-sm leading-relaxed text-zinc-700 sm:text-base">
-            Термін «підлога» слід розуміти як обробку горизонтальної перегородки
-            конструкції, що надає їй необхідні функціональні властивості. Підлога
-            складається з: гідроізоляційних шарів, пароізоляції, тепло- і звукоізоляції,
-            захисних шарів, несучих шарів (бетонів, стяжок), обраних в залежності від
-            навантаження, типу приміщення і відповідних вимог до використання. З іншого
-            боку, підлога – це верхній шар, який переносить функціональні навантаження на
-            будівельні шари і / або захищає його від пошкоджень, викликаних агресивним
-            середовищем і / або.
-          </p>
-
-          <p className="mt-6 text-sm leading-relaxed text-zinc-700 sm:text-base">
-            Дизайнерські рішення для підлог варіюються в залежності від навантаження і
-            місця установки (умов експлуатації). Тип використовуваних матеріалів залежить,
-            перш за все, від типу приміщення і об’єкта, способу завантаження, наявності та
-            типу агресивних сполук, способу використання приміщення, додаткових санітарних
-            вимог і т. д.
-          </p>
+          <div className="space-y-6">
+            {paragraphs.map((text, idx) => (
+              <p
+                key={idx}
+                className="text-sm leading-relaxed text-zinc-700 sm:text-base"
+              >
+                {text}
+              </p>
+            ))}
+          </div>
         </div>
       </div>
     </section>
