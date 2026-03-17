@@ -60,3 +60,26 @@ ssh-keygen -t ed25519 -C "github-actions-deploy" -f deploy_key -N ""
 2. GitHub → **Actions** → workflow **Deploy to hosting**. Якщо секрети задані й SSH працює — job завершиться успішно, на сервері оновляться файли і виконаються `npm install` та `npm run build`.
 
 При помилці перевірте лог кроків «Check deployment secrets» та «Deploy via SSH».
+
+## Заявки в Telegram (бот)
+
+На сайті форма відправляється на серверний endpoint `public/api/telegram.php`, а вже він надсилає повідомлення в Telegram. Це зроблено навмисно, щоб **токен бота не потрапляв у браузер**.
+
+### 1) Додайте змінні середовища на хостингу
+
+У панелі хостингу (або в конфігах PHP/FastCGI) задайте:
+
+- **`TELEGRAM_BOT_TOKEN`**: токен бота
+- **`TELEGRAM_CHAT_ID`**: chat_id куди надсилати заявки (ваш особистий чат або група)
+
+### 2) Як отримати `TELEGRAM_CHAT_ID`
+
+- Напишіть боту (або додайте його в групу) і надішліть будь-яке повідомлення.
+- Відкрийте в браузері:
+  - `https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/getUpdates`
+- Знайдіть у відповіді `message.chat.id` — це і є `TELEGRAM_CHAT_ID`.
+
+### 3) Важливо про безпеку
+
+- **Не комітьте токен** в репозиторій.
+- Якщо токен вже десь “засвітився” — **перевипустіть його** у BotFather і оновіть `TELEGRAM_BOT_TOKEN` на хостингу.

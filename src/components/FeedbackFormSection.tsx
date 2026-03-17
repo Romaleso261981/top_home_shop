@@ -1,4 +1,7 @@
+"use client";
+
 import { ctaButtonClass } from "@/components/buttonStyles";
+import { useMemo, useState } from "react";
 
 type FeedbackFormSectionProps = {
   title: string;
@@ -9,12 +12,64 @@ export function FeedbackFormSection({
   title,
   buttonText,
 }: FeedbackFormSectionProps) {
+  const [status, setStatus] = useState<
+    "idle" | "sending" | "success" | "error"
+  >("idle");
+  const [errorText, setErrorText] = useState<string>("");
+
+  const canSubmit = useMemo(() => status !== "sending", [status]);
+
   return (
     <section className="mb-12 bg-[#15698f] px-4 py-8 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-5xl">
         <h2 className="text-center text-2xl font-bold sm:text-3xl">{title}</h2>
 
-        <form className="mt-8">
+        <form
+          className="mt-8"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            if (!canSubmit) return;
+
+            setStatus("sending");
+            setErrorText("");
+
+            const form = e.currentTarget;
+            const fd = new FormData(form);
+
+            const payload = {
+              name: String(fd.get("name") ?? "").trim(),
+              phone: String(fd.get("phone") ?? "").trim(),
+              email: String(fd.get("email") ?? "").trim(),
+              message: String(fd.get("message") ?? "").trim(),
+              website: String(fd.get("website") ?? "").trim(), // honeypot
+              pageUrl: typeof window !== "undefined" ? window.location.href : "",
+            };
+
+            try {
+              const res = await fetch("/api/telegram.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+              });
+
+              const json = (await res.json().catch(() => null)) as
+                | { ok?: boolean; error?: string }
+                | null;
+
+              if (!res.ok || !json?.ok) {
+                setStatus("error");
+                setErrorText(json?.error ?? "Не вдалося відправити. Спробуйте пізніше.");
+                return;
+              }
+
+              setStatus("success");
+              form.reset();
+            } catch {
+              setStatus("error");
+              setErrorText("Не вдалося відправити. Перевірте інтернет і спробуйте ще раз.");
+            }
+          }}
+        >
           <div className="grid gap-4 lg:grid-cols-3">
             <input
               type="text"
@@ -28,7 +83,22 @@ export function FeedbackFormSection({
               placeholder="Ваш телефон"
               className="h-12 w-full border-0 bg-white px-5 text-zinc-900 shadow-sm outline-none placeholder:text-zinc-400"
             />
+            <input
+              type="email"
+              name="email"
+              placeholder="Ваш емейл"
+              className="h-12 w-full border-0 bg-white px-5 text-zinc-900 shadow-sm outline-none placeholder:text-zinc-400"
+            />
           </div>
+
+          <input
+            type="text"
+            name="website"
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            className="hidden"
+          />
 
           <textarea
             name="message"
@@ -37,12 +107,22 @@ export function FeedbackFormSection({
             className="mt-4 w-full border-0 bg-white px-5 py-4 text-zinc-900 shadow-sm outline-none placeholder:text-zinc-400"
           />
 
+          {status === "success" ? (
+            <p className="mt-4 text-center text-sm text-emerald-100">
+              Дякуємо! Повідомлення відправлено.
+            </p>
+          ) : null}
+          {status === "error" ? (
+            <p className="mt-4 text-center text-sm text-rose-100">{errorText}</p>
+          ) : null}
+
           <div className="mt-8 flex justify-center">
             <button
               type="submit"
-              className={`${ctaButtonClass} min-w-[280px]`}
+              disabled={!canSubmit}
+              className={`${ctaButtonClass} min-w-[280px] disabled:cursor-not-allowed disabled:opacity-70`}
             >
-              {buttonText}
+              {status === "sending" ? "Відправляємо..." : buttonText}
             </button>
           </div>
         </form>

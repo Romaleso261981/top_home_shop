@@ -67,13 +67,6 @@ export function Header() {
               33027, м. Ладижин, вул. Данила Галицького, 25а/1
             </span>
           </div>
-
-          <a
-            href="#contact"
-            className={`${ctaButtonClass} w-full px-4 py-3 text-xs uppercase tracking-wide sm:w-auto`}
-          >
-            Замовити дзвінок
-          </a>
         </div>
       </div>
     </header>
