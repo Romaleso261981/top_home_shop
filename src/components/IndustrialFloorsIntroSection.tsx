@@ -2,6 +2,16 @@ import Image from "next/image";
 
 type IndustrialFloorsIntroSectionProps = {
   /**
+   * Шлях до картинки (зазвичай з `public/`, напр. "/poly.jpg")
+   */
+  imageSrc: string;
+
+  /**
+   * Alt текст для зображення
+   */
+  imageAlt?: string;
+
+  /**
    * CSS object-position (приклади: "center", "top", "left", "50% 30%")
    * Працює разом з object-none (картинка не масштабується).
    */
@@ -19,6 +29,8 @@ type IndustrialFloorsIntroSectionProps = {
 };
 
 export function IndustrialFloorsIntroSection({
+  imageSrc,
+  imageAlt = "Зображення",
   imagePosition = "center",
   imageSide = "left",
   paragraphs,
@@ -35,8 +47,8 @@ export function IndustrialFloorsIntroSection({
         <div className={["overflow-x-auto", imageSide === "right" ? "lg:order-2" : ""].join(" ")}>
           <div className="w-[520px]">
             <Image
-              src="/promyshlennye-poly.jpg"
-              alt="Промислові бетонні підлоги"
+              src={imageSrc}
+              alt={imageAlt}
               width={520}
               height={340}
               className="block h-[340px] w-[520px] border border-zinc-200 object-none"
