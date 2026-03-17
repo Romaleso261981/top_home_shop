@@ -8,6 +8,11 @@ type IndustrialFloorsIntroSectionProps = {
   imagePosition?: string;
 
   /**
+   * Де показувати картинку на десктопі.
+   */
+  imageSide?: "left" | "right";
+
+  /**
    * Текст секції (кожен елемент масиву — окремий абзац).
    */
   paragraphs: string[];
@@ -15,13 +20,19 @@ type IndustrialFloorsIntroSectionProps = {
 
 export function IndustrialFloorsIntroSection({
   imagePosition = "center",
+  imageSide = "left",
   paragraphs,
 }: IndustrialFloorsIntroSectionProps) {
   return (
     <section className="mb-12 bg-white shadow-sm sm:rounded-2xl sm:px-10 sm:py-8">
-      <div className="grid gap-8 sm:gap-10 lg:grid-cols-[520px_1fr] lg:items-start">
+      <div
+        className={[
+          "grid gap-8 sm:gap-10 lg:items-start",
+          imageSide === "right" ? "lg:grid-cols-[1fr_520px]" : "lg:grid-cols-[520px_1fr]",
+        ].join(" ")}
+      >
         {/* Image: fixed size, no responsive scaling */}
-        <div className="overflow-x-auto">
+        <div className={["overflow-x-auto", imageSide === "right" ? "lg:order-2" : ""].join(" ")}>
           <div className="w-[520px]">
             <Image
               src="/promyshlennye-poly.jpg"
@@ -35,7 +46,12 @@ export function IndustrialFloorsIntroSection({
           </div>
         </div>
 
-        <div className="px-4 pb-6 sm:px-0 sm:pb-0">
+        <div
+          className={[
+            "px-4 pb-6 sm:px-0 sm:pb-0",
+            imageSide === "right" ? "lg:order-1" : "",
+          ].join(" ")}
+        >
           <div className="space-y-6">
             {paragraphs.map((text, idx) => (
               <p
