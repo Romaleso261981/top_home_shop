@@ -1,3 +1,5 @@
+import { Logo } from "@/components/Logo";
+
 const navItems = [
   { label: "Головна", href: "/" },
   { label: "Послуги", href: "#services" },
@@ -42,6 +44,41 @@ function IconPin(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
+function IconSearch(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.3-4.3" />
+    </svg>
+  );
+}
+
+function IconChevronDown(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
 export function Header() {
   return (
     <header className="bg-slate-800 text-slate-100">
@@ -49,7 +86,7 @@ export function Header() {
       <div className="border-b border-white/10">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-2 sm:flex-row sm:items-center sm:justify-around sm:gap-4 sm:px-6">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-200/90">
-            <div className="flex flex-row justify-around gap-x-2 lg:flex-col">
+            <div className="flex flex-col gap-1">
               <a
                 href="tel:+380965984470"
                 className="inline-flex items-center gap-2 hover:text-white"
@@ -69,7 +106,7 @@ export function Header() {
               <IconPin className="h-4 w-4 opacity-90" />
               Україна
             </span>
-            <span className="items-center gap-2 lg:inline-flex">
+            <span className="hidden items-center gap-2 lg:inline-flex">
               <IconPin className="h-4 w-4 opacity-90" />
               33027, м. Рівне, вул. Данила Галицького, 25а/1
             </span>
@@ -83,20 +120,65 @@ export function Header() {
           </a>
         </div>
       </div>
-      {/* Mobile nav */}
-      {/* <div className="border-t border-white/10 md:hidden">
-        <div className="mx-auto flex max-w-6xl gap-4 overflow-x-auto px-4 py-2 text-sm text-slate-200 sm:px-6">
-          {navItems.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="whitespace-nowrap transition hover:text-white"
+
+      {/* Main nav bar */}
+     
+        {/* <div className="mx-auto flex max-w-6xl items-center justify-around px-4 py-3 sm:px-6">
+          <div className="flex items-center gap-3">
+            <Logo className="shrink-0" />
+            <div className="leading-tight">
+              <div className="text-sm font-semibold">Моноліт</div>
+              <div className="text-[11px] text-slate-300">Промислові підлоги</div>
+            </div>
+          </div>
+
+          <nav className="hidden items-center gap-6 text-sm text-slate-200 md:flex">
+            {navItems.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="transition hover:text-white"
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              aria-label="Пошук"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-white/5 text-slate-200 transition hover:bg-white/10 hover:text-white"
             >
-              {item.label}
-            </a>
-          ))}
+              <IconSearch className="h-5 w-5" />
+            </button>
+
+            <button
+              type="button"
+              className="inline-flex items-center gap-2 rounded-md bg-white/5 px-3 py-2 text-sm text-slate-200 transition hover:bg-white/10 hover:text-white"
+              aria-label="Мова"
+            >
+              Укр.
+              <IconChevronDown className="h-4 w-4 opacity-90" />
+            </button>
+          </div>
+        </div> */}
+
+        {/* Mobile nav */}
+        <div className="border-t border-white/10 md:hidden">
+          <div className="mx-auto flex max-w-6xl gap-4 overflow-x-auto px-4 py-2 text-sm text-slate-200 sm:px-6">
+            {navItems.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="whitespace-nowrap transition hover:text-white"
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
         </div>
-      </div> */}
+      
     </header>
   );
 }
