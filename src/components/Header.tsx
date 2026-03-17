@@ -102,7 +102,7 @@ export function Header() {
     <header className="bg-slate-800 text-slate-100">
       {/* Top info bar */}
       <div className="border-b border-white/10">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
+        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-2 sm:flex-row sm:items-center sm:justify-around sm:gap-4 sm:px-6">
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-200/90">
             <div className="flex flex-col gap-1">
               <a
@@ -119,14 +119,14 @@ export function Header() {
                 <IconPhone className="h-4 w-4 opacity-90" />
                 +38 (067) 382 30 23
               </a>
+              <a
+                href="mailto:monolitrvua@gmail.com"
+                className="inline-flex items-center gap-2 hover:text-white"
+              >
+                <IconMail className="h-4 w-4 opacity-90" />
+                monolitrvua@gmail.com
+              </a>
             </div>
-            <a
-              href="mailto:monolitrvua@gmail.com"
-              className="inline-flex items-center gap-2 hover:text-white"
-            >
-              <IconMail className="h-4 w-4 opacity-90" />
-              monolitrvua@gmail.com
-            </a>
             <span className="hidden items-center gap-2 md:inline-flex">
               <IconPin className="h-4 w-4 opacity-90" />
               Україна
@@ -147,15 +147,17 @@ export function Header() {
       </div>
 
       {/* Main nav bar */}
-      <div>
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
+     
+        <div className="mx-auto flex max-w-6xl items-center justify-around px-4 py-3 sm:px-6">
           <Link href="/" className="flex items-center gap-3">
             <div className="grid h-9 w-9 place-items-center rounded bg-slate-700 text-slate-100">
               <span className="text-sm font-bold">M</span>
             </div>
             <div className="leading-tight">
               <div className="text-sm font-semibold">Моноліт</div>
-              <div className="text-[11px] text-slate-300">Промислові підлоги</div>
+              <div className="text-[11px] text-slate-300">
+                Промислові підлоги
+              </div>
             </div>
           </Link>
 
@@ -205,8 +207,7 @@ export function Header() {
             ))}
           </div>
         </div>
-      </div>
+      
     </header>
   );
 }
-
