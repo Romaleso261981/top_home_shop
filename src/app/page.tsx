@@ -1,11 +1,7 @@
 import { HeroSection } from "@/components/HeroSection";
-import { AboutSection } from "@/components/AboutSection";
 import { IndustrialFloorsIntroSection } from "@/components/IndustrialFloorsIntroSection";
 import { MaterialSelectionSection } from "@/components/MaterialSelectionSection";
-import { TypesSection } from "@/components/TypesSection";
-import { BenefitsSection } from "@/components/BenefitsSection";
-import { StepsSection } from "@/components/StepsSection";
-import { ContactSection } from "@/components/ContactSection";
+import { FeedbackFormSection } from "@/components/FeedbackFormSection";
 
 export default function Home() {
   return (
@@ -55,11 +51,15 @@ export default function Home() {
             "Вологостійкість: Бетонні підлоги можуть бути застосовані в умовах високої вологості, таких як промислові мийки або лабораторії, оскільки вони вологостійкі та не піддаються корозії.","Можливість теплопровідності: Бетонні підлоги можуть бути використані як система теплої підлоги, що дозволяє рівномірно розподіляти тепло в приміщенні.","Простота догляду: Бетонні підлоги легко миються та дезінфікуються, що робить їх ідеальними для приміщень з високими вимогами до гігієни.","Можливість використання як основу для інших покриттів: Бетонні підлоги можуть служити основою для встановлення різних видів покриттів, таких як епоксидні смоли або поліуретанові покриття, що дозволяє досягти різних естетичних та функціональних цілей.","Естетика: Бетонні підлоги можуть мати сучасний і промисловий вигляд, що дозволяє їм вписуватися в різноманітні стилі дизайну приміщень."
           ]}
         />
-        {/* <AboutSection />
-        <TypesSection />
-        <BenefitsSection />
-        <StepsSection />
-        <ContactSection /> */}
+        <FeedbackFormSection
+          title="Залишились питання?"
+          buttonText="Відправити питання"
+        />
+        {/* <AboutSection /> */}
+        {/* <TypesSection /> */}
+        {/* <BenefitsSection /> */}
+        {/* <StepsSection /> */}
+        {/* <ContactSection /> */}
       </main>
     </div>
   );
