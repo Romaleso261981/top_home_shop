@@ -62,7 +62,7 @@ export function Header() {
             </span>
             <span className="items-center gap-2 lg:inline-flex">
               <IconPin className="h-4 w-4 opacity-90" />
-              33027, м. Рівне, вул. Данила Галицького, 25а/1
+              33027, м. Ладижин, вул. Данила Галицького, 25а/1
             </span>
           </div>
 
@@ -74,20 +74,6 @@ export function Header() {
           </a>
         </div>
       </div>
-      {/* Mobile nav */}
-      {/* <div className="border-t border-white/10 md:hidden">
-        <div className="mx-auto flex max-w-6xl gap-4 overflow-x-auto px-4 py-2 text-sm text-slate-200 sm:px-6">
-          {navItems.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="whitespace-nowrap transition hover:text-white"
-            >
-              {item.label}
-            </a>
-          ))}
-        </div>
-      </div> */}
     </header>
   );
 }
