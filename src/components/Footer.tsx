@@ -111,24 +111,20 @@ export function Footer() {
           <div>
             <h3 className="text-xl font-semibold text-white">Контакти</h3>
             <div className="mt-5 space-y-4 text-sm text-zinc-300">
-              <a href="mailto:monolitrvua@gmail.com" className="flex items-start gap-3 hover:text-white">
-                <IconMail className="mt-0.5 h-4 w-4 shrink-0" />
-                <span>monolitrvua@gmail.com</span>
-              </a>
               <div className="flex items-start gap-3">
                 <IconPhone className="mt-0.5 h-4 w-4 shrink-0" />
                 <div className="space-y-1">
                   <a href="tel:+380965984470" className="block hover:text-white">
-                    +38 (096) 598 44 70
+                    +38 (067) 442 83 46
                   </a>
                   <a href="tel:+380673823099" className="block hover:text-white">
-                    +38 (067) 382 30 99
+                    +38 (067) 442 83 46
                   </a>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <IconPin className="mt-0.5 h-4 w-4 shrink-0" />
-                <span>33027, м. Рівне, вул. Данила Галицького, 25а/1 Україна</span>
+                <span>33027, м. Ладижин, вул. Данила Галицького, 25а/1 Україна</span>
               </div>
             </div>
           </div>
@@ -137,8 +133,8 @@ export function Footer() {
 
       <div className="border-t border-white/5 bg-[#1a1f28]">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-6 text-center text-sm text-zinc-400 sm:px-6 lg:px-8">
-          <p>© 2023 «Компанія управління будівництвом «Моноліт»</p>
-          <p>Розробка та просування сайту — Агентство [inClick]</p>
+          <p>© 2026 «Компанія управління будівництвом «Моноліт»</p>
+          <p>Розробка та просування сайту — Агентство «Gigaweb»</p>
         </div>
       </div>
     </footer>
