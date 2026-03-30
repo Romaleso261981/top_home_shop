@@ -92,23 +92,3 @@ ssh-keygen -t ed25519 -C "github-actions-deploy" -f deploy_key -N ""
 - `CRM_GENERIC_WEBHOOK_URL=https://...`
 
 Потім `npm run dev`.
-
----
-
-## Заявки в Telegram (опційно)
-
-Якщо потрібен лише Telegram, у `src/components/FeedbackFormSection.tsx` змініть endpoint на ` /api/telegram` та `/api/telegram.php` замість CRM.
-
-Endpoint **`public/api/telegram.php`** надсилає повідомлення в Telegram; локально — `src/app/api/telegram/route.ts` → `/api/telegram`.
-
-### Змінні на хостингу
-
-- **`TELEGRAM_BOT_TOKEN`**, **`TELEGRAM_CHAT_ID`**
-
-### Як отримати `TELEGRAM_CHAT_ID`
-
-- Напишіть боту або додайте його в групу, потім відкрийте:
-  - `https://api.telegram.org/bot<ВАШ_ТОКЕН>/getUpdates`
-- У відповіді знайдіть `message.chat.id`.
-
-**Не комітьте токени.** Якщо потрапили в git або в документацію — перевипустіть токен у BotFather.

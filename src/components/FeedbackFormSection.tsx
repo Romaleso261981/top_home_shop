@@ -8,7 +8,7 @@ type FeedbackFormSectionProps = {
   buttonText: string;
 };
 
-type TelegramFormResponse = {
+type FormSubmitResponse = {
   ok?: boolean;
   error?: string;
   description?: string;
@@ -67,10 +67,10 @@ export function FeedbackFormSection({
               });
 
               const raw = await res.text();
-              let json: TelegramFormResponse | null = null;
+              let json: FormSubmitResponse | null = null;
               if (raw) {
                 try {
-                  json = JSON.parse(raw) as TelegramFormResponse;
+                  json = JSON.parse(raw) as FormSubmitResponse;
                 } catch {
                   json = null;
                 }
