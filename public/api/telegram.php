@@ -5,8 +5,8 @@ declare(strict_types=1);
  * Резерв: можна задати тут. Безпечніше на проді — змінні середовища в панелі хостингу
  * (TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID), без токена в git.
  */
-const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE';
-const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID_HERE';
+const TELEGRAM_BOT_TOKEN = '8748593421:AAF6_YaQu1bMwZdjUOgwBQYdrxMQf-WQZRo';
+const TELEGRAM_CHAT_ID = '-1003555470900';
 
 /**
  * Багато хостингів передають змінні лише в $_SERVER / $_ENV.
@@ -91,11 +91,24 @@ function sendTelegramMessage(string $text, string $parseMode = 'HTML'): array
     return ['ok' => false, 'error' => 'cURL error: ' . $curlErr];
   }
 
-  if ($httpCode < 200 || $httpCode >= 300) {
-    return ['ok' => false, 'error' => 'Telegram API error', 'details' => $resp];
+  $decoded = json_decode($resp, true);
+  $tgDesc = is_array($decoded) && isset($decoded['description'])
+    ? (string)$decoded['description']
+    : '';
+
+  // Telegram часто відповідає HTTP 200 із {"ok":false,"description":"..."}
+  if (is_array($decoded) && isset($decoded['ok']) && $decoded['ok'] === true) {
+    return ['ok' => true];
   }
 
-  return ['ok' => true];
+  $msg = 'Telegram API error';
+  if ($tgDesc !== '') {
+    $msg = 'Telegram: ' . $tgDesc;
+  } elseif ($httpCode < 200 || $httpCode >= 300) {
+    $msg = 'Telegram API error (HTTP ' . $httpCode . ')';
+  }
+
+  return ['ok' => false, 'error' => $msg, 'details' => $resp];
 }
 
 header('Content-Type: application/json; charset=utf-8');

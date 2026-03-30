@@ -59,14 +59,30 @@ export function FeedbackFormSection({
                 body: JSON.stringify(payload),
               });
 
-              const json = (await res.json().catch(() => null)) as
-                | { ok?: boolean; error?: string; description?: string; errorCode?: number }
-                | null;
+              const raw = await res.text();
+              let json: {
+                ok?: boolean;
+                error?: string;
+                description?: string;
+                details?: string;
+              } | null = null;
+              if (raw) {
+                try {
+                  json = JSON.parse(raw) as typeof json;
+                } catch {
+                  json = null;
+                }
+              }
 
               if (!res.ok || !json?.ok) {
                 setStatus("error");
+                const base =
+                  json?.error ??
+                  (res.status >= 500
+                    ? "Сервер тимчасово недоступний. Спробуйте пізніше."
+                    : "Не вдалося відправити. Спробуйте пізніше.");
                 const parts = [
-                  json?.error ?? "Не вдалося відправити. Спробуйте пізніше.",
+                  base,
                   json?.description ? `(${json.description})` : "",
                 ].filter(Boolean);
                 setErrorText(parts.join(" "));
