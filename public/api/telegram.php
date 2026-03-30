@@ -2,11 +2,55 @@
 declare(strict_types=1);
 
 /**
- * Замініть на реальні значення з @BotFather та вашого чату/каналу.
- * Увага: тримати токен у коді небезпечно для публічних репозиторіїв.
+ * Резерв: можна задати тут. Безпечніше на проді — змінні середовища в панелі хостингу
+ * (TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID), без токена в git.
  */
 const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE';
 const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID_HERE';
+
+/**
+ * Багато хостингів передають змінні лише в $_SERVER / $_ENV.
+ */
+function telegramEnv(string $name): string
+{
+  $v = getenv($name);
+  if ($v !== false && $v !== '') {
+    return $v;
+  }
+  if (isset($_ENV[$name]) && is_string($_ENV[$name]) && $_ENV[$name] !== '') {
+    return $_ENV[$name];
+  }
+  if (isset($_SERVER[$name]) && is_string($_SERVER[$name]) && $_SERVER[$name] !== '') {
+    return $_SERVER[$name];
+  }
+  return '';
+}
+
+/**
+ * Спочатку env (хостинг), інакше константи (якщо не плейсхолдери).
+ *
+ * @return array{token: string, chat_id: string}
+ */
+function resolveTelegramCredentials(): array
+{
+  $token = telegramEnv('TELEGRAM_BOT_TOKEN');
+  $chatId = telegramEnv('TELEGRAM_CHAT_ID');
+
+  if ($token === '') {
+    $t = TELEGRAM_BOT_TOKEN;
+    if ($t !== '' && $t !== 'YOUR_BOT_TOKEN_HERE') {
+      $token = $t;
+    }
+  }
+  if ($chatId === '') {
+    $c = TELEGRAM_CHAT_ID;
+    if ($c !== '' && $c !== 'YOUR_CHAT_ID_HERE') {
+      $chatId = $c;
+    }
+  }
+
+  return ['token' => $token, 'chat_id' => $chatId];
+}
 
 /**
  * Надсилає текст у Telegram через Bot API.
@@ -15,11 +59,12 @@ const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID_HERE';
  */
 function sendTelegramMessage(string $text, string $parseMode = 'HTML'): array
 {
-  $token = TELEGRAM_BOT_TOKEN;
-  $chatId = TELEGRAM_CHAT_ID;
+  $creds = resolveTelegramCredentials();
+  $token = $creds['token'];
+  $chatId = $creds['chat_id'];
 
-  if ($token === '' || $token === 'YOUR_BOT_TOKEN_HERE' || $chatId === '' || $chatId === 'YOUR_CHAT_ID_HERE') {
-    return ['ok' => false, 'error' => 'Server is not configured (set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID constants)'];
+  if ($token === '' || $chatId === '') {
+    return ['ok' => false, 'error' => 'Server is not configured (set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID in hosting environment or constants in telegram.php)'];
   }
 
   $apiUrl = 'https://api.telegram.org/bot' . $token . '/sendMessage';
