@@ -1,25 +1,64 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * Замініть на реальні значення з @BotFather та вашого чату/каналу.
+ * Увага: тримати токен у коді небезпечно для публічних репозиторіїв.
+ */
+const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE';
+const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID_HERE';
+
+/**
+ * Надсилає текст у Telegram через Bot API.
+ *
+ * @return array{ok: bool, error?: string, details?: string}
+ */
+function sendTelegramMessage(string $text, string $parseMode = 'HTML'): array
+{
+  $token = TELEGRAM_BOT_TOKEN;
+  $chatId = TELEGRAM_CHAT_ID;
+
+  if ($token === '' || $token === 'YOUR_BOT_TOKEN_HERE' || $chatId === '' || $chatId === 'YOUR_CHAT_ID_HERE') {
+    return ['ok' => false, 'error' => 'Server is not configured (set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID constants)'];
+  }
+
+  $apiUrl = 'https://api.telegram.org/bot' . $token . '/sendMessage';
+  $payload = json_encode([
+    'chat_id' => $chatId,
+    'text' => $text,
+    'parse_mode' => $parseMode,
+    'disable_web_page_preview' => true,
+  ], JSON_UNESCAPED_UNICODE);
+
+  $ch = curl_init($apiUrl);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_POST, true);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+  curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+
+  $resp = curl_exec($ch);
+  $curlErr = curl_error($ch);
+  $httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+  curl_close($ch);
+
+  if ($resp === false) {
+    return ['ok' => false, 'error' => 'cURL error: ' . $curlErr];
+  }
+
+  if ($httpCode < 200 || $httpCode >= 300) {
+    return ['ok' => false, 'error' => 'Telegram API error', 'details' => $resp];
+  }
+
+  return ['ok' => true];
+}
+
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
   http_response_code(405);
   echo json_encode(['ok' => false, 'error' => 'Method not allowed'], JSON_UNESCAPED_UNICODE);
-  exit;
-}
-
-// Read env from hosting (do NOT hardcode tokens in repo)
-$token = getenv('TELEGRAM_BOT_TOKEN') ?: '';
-$chatId = getenv('TELEGRAM_CHAT_ID') ?: '';
-
-if ($token === '' || $chatId === '') {
-  http_response_code(500);
-  echo json_encode([
-    'ok' => false,
-    'error' => 'Server is not configured (missing TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID)'
-  ], JSON_UNESCAPED_UNICODE);
   exit;
 }
 
@@ -52,52 +91,48 @@ if ($phone === '' && $email === '' && $name === '' && $message === '') {
   exit;
 }
 
-// Escape for Telegram HTML parse mode
-function esc(string $s): string {
+function esc(string $s): string
+{
   return htmlspecialchars($s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
 $lines = [];
 $lines[] = "<b>Нове звернення з сайту</b>";
-if ($name !== '') $lines[] = "<b>Ім'я:</b> " . esc($name);
-if ($phone !== '') $lines[] = "<b>Телефон:</b> " . esc($phone);
-if ($email !== '') $lines[] = "<b>Email:</b> " . esc($email);
-if ($message !== '') $lines[] = "<b>Повідомлення:</b>\n" . esc($message);
-if ($pageUrl !== '') $lines[] = "<b>Сторінка:</b> " . esc($pageUrl);
+if ($name !== '') {
+  $lines[] = "<b>Ім'я:</b> " . esc($name);
+}
+if ($phone !== '') {
+  $lines[] = "<b>Телефон:</b> " . esc($phone);
+}
+if ($email !== '') {
+  $lines[] = "<b>Email:</b> " . esc($email);
+}
+if ($message !== '') {
+  $lines[] = "<b>Повідомлення:</b>\n" . esc($message);
+}
+if ($pageUrl !== '') {
+  $lines[] = "<b>Сторінка:</b> " . esc($pageUrl);
+}
 
 $text = implode("\n", $lines);
 
-$apiUrl = "https://api.telegram.org/bot{$token}/sendMessage";
-$payload = json_encode([
-  'chat_id' => $chatId,
-  'text' => $text,
-  'parse_mode' => 'HTML',
-  'disable_web_page_preview' => true,
-], JSON_UNESCAPED_UNICODE);
+$result = sendTelegramMessage($text);
 
-$ch = curl_init($apiUrl);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-
-$resp = curl_exec($ch);
-$curlErr = curl_error($ch);
-$httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
-curl_close($ch);
-
-if ($resp === false) {
-  http_response_code(502);
-  echo json_encode(['ok' => false, 'error' => 'cURL error: ' . $curlErr], JSON_UNESCAPED_UNICODE);
-  exit;
-}
-
-if ($httpCode < 200 || $httpCode >= 300) {
-  http_response_code(502);
-  echo json_encode(['ok' => false, 'error' => 'Telegram API error', 'details' => $resp], JSON_UNESCAPED_UNICODE);
+if (!$result['ok']) {
+  $msg = $result['error'] ?? 'Unknown error';
+  if (strpos($msg, 'not configured') !== false) {
+    http_response_code(500);
+  } elseif (strpos($msg, 'cURL') === 0) {
+    http_response_code(502);
+  } else {
+    http_response_code(502);
+  }
+  $out = ['ok' => false, 'error' => $msg];
+  if (isset($result['details'])) {
+    $out['details'] = $result['details'];
+  }
+  echo json_encode($out, JSON_UNESCAPED_UNICODE);
   exit;
 }
 
 echo json_encode(['ok' => true], JSON_UNESCAPED_UNICODE);
-
