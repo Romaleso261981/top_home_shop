@@ -61,38 +61,54 @@ ssh-keygen -t ed25519 -C "github-actions-deploy" -f deploy_key -N ""
 
 При помилці перевірте лог кроків «Check deployment secrets» та «Deploy via SSH».
 
-## Заявки в Telegram (бот)
+## Заявки в CRM (Bitrix24 / універсальний вебхук)
 
-На сайті форма відправляється на серверний endpoint `public/api/telegram.php`, а вже він надсилає повідомлення в Telegram. Це зроблено навмисно, щоб **токен бота не потрапляв у браузер**.
+Форма відправляє POST на **`public/api/crm.php`** (після збірки потрапляє в `out/api/crm.php`). Секрети лишаються на сервері.
 
-Локально (через `npm run dev`) використовується Next API endpoint `src/app/api/telegram/route.ts` за шляхом `/api/telegram`.
+Локально (`npm run dev`) використовується `src/app/api/crm/route.ts` → **`/api/crm`**.
 
-### 1) Додайте змінні середовища на хостингу
+### Bitrix24 (лід у воронці)
 
-У панелі хостингу (або в конфігах PHP/FastCGI) задайте:
+1. У Bitrix24: **Налаштування → Розробникам → Входящий вебхук** (або аналог) — створіть вебхук з правом **`crm`** (додавання лідів).
+2. Скопіюйте **повний URL виклику методу** `crm.lead.add` (вигляду: `https://ВАШ_ПОРТАЛ.bitrix24.*/rest/.../crm.lead.add`).
+3. На хостингу задайте змінну середовища **`CRM_BITRIX_LEAD_WEBHOOK_URL`** = цей URL.  
+   Або вставте URL у константу `CRM_BITRIX_LEAD_WEBHOOK_URL` у файлі `public/api/crm.php` (не комітьте секрет у публічний репозиторій).
 
-- **`TELEGRAM_BOT_TOKEN`**: токен бота
-- **`TELEGRAM_CHAT_ID`**: chat_id куди надсилати заявки (ваш особистий чат або група)
+Якщо задано Bitrix-URL, **універсальний вебхук не використовується** (пріоритет у Bitrix).
 
-### 2) Як отримати `TELEGRAM_CHAT_ID`
+### amoCRM та інші CRM
 
-- Напишіть боту (або додайте його в групу) і надішліть будь-яке повідомлення.
-- Відкрийте в браузері:
-  - `https://api.telegram.org/bot8748593421:AAHylWcJvvIiN3nXDs-XEJuBuv5W2TMP-3Y/getUpdates`
-- Знайдіть у відповіді `message.chat.id` — це і є `TELEGRAM_CHAT_ID`.
+Прямий вхідний webhook у amoCRM для «голої» HTML-форми зазвичай складніший (OAuth, токени). Типовий обхід: **універсальний URL** + сценарій у **Make / Zapier / власний скрипт**, який з вашого JSON створює лід у amoCRM.
 
-### 3) Важливо про безпеку
+1. На хостингу задайте **`CRM_GENERIC_WEBHOOK_URL`** — URL, який приймає POST з JSON:
+   - `source`, `name`, `phone`, `email`, `message`, `pageUrl`
+2. У Bitrix поле не заповнюйте (або залиште порожнім константи в `crm.php`), щоб спрацював generic.
 
-- **Не комітьте токен** в репозиторій.
-- Якщо токен вже десь “засвітився” — **перевипустіть його** у BotFather і оновіть `TELEGRAM_BOT_TOKEN` на хостингу.
+### Локально
 
-### 4) Локальний запуск (щоб заявки теж приходили)
+У `.env.local` (не комітьте):
 
-Створіть файл `.env.local` (не комітьте його) і додайте:
+- `CRM_BITRIX_LEAD_WEBHOOK_URL=https://.../crm.lead.add` **або**
+- `CRM_GENERIC_WEBHOOK_URL=https://...`
 
-- `TELEGRAM_BOT_TOKEN=...`
-- `TELEGRAM_CHAT_ID=...`
+Потім `npm run dev`.
 
-Потім:
+---
 
-- `npm run dev`
+## Заявки в Telegram (опційно)
+
+Якщо потрібен лише Telegram, у `src/components/FeedbackFormSection.tsx` змініть endpoint на ` /api/telegram` та `/api/telegram.php` замість CRM.
+
+Endpoint **`public/api/telegram.php`** надсилає повідомлення в Telegram; локально — `src/app/api/telegram/route.ts` → `/api/telegram`.
+
+### Змінні на хостингу
+
+- **`TELEGRAM_BOT_TOKEN`**, **`TELEGRAM_CHAT_ID`**
+
+### Як отримати `TELEGRAM_CHAT_ID`
+
+- Напишіть боту або додайте його в групу, потім відкрийте:
+  - `https://api.telegram.org/bot<ВАШ_ТОКЕН>/getUpdates`
+- У відповіді знайдіть `message.chat.id`.
+
+**Не комітьте токени.** Якщо потрапили в git або в документацію — перевипустіть токен у BotFather.
