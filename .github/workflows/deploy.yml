@@ -21,7 +21,7 @@ jobs:
       - name: Build & export static site
         run: |
           npm install
-          npm run build
+          STATIC_EXPORT=true npm run build
 
       - name: Deploy via SSH (upload static out/ directory)
         env:

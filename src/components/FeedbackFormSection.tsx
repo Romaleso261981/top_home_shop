@@ -46,7 +46,14 @@ export function FeedbackFormSection({
             };
 
             try {
-              const res = await fetch("/api/telegram.php", {
+              const isLocal =
+                typeof window !== "undefined" &&
+                (window.location.hostname === "localhost" ||
+                  window.location.hostname === "127.0.0.1");
+
+              const endpoint = isLocal ? "/api/telegram" : "/api/telegram.php";
+
+              const res = await fetch(endpoint, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),

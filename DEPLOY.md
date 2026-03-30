@@ -65,6 +65,8 @@ ssh-keygen -t ed25519 -C "github-actions-deploy" -f deploy_key -N ""
 
 На сайті форма відправляється на серверний endpoint `public/api/telegram.php`, а вже він надсилає повідомлення в Telegram. Це зроблено навмисно, щоб **токен бота не потрапляв у браузер**.
 
+Локально (через `npm run dev`) використовується Next API endpoint `src/app/api/telegram/route.ts` за шляхом `/api/telegram`.
+
 ### 1) Додайте змінні середовища на хостингу
 
 У панелі хостингу (або в конфігах PHP/FastCGI) задайте:
@@ -76,10 +78,21 @@ ssh-keygen -t ed25519 -C "github-actions-deploy" -f deploy_key -N ""
 
 - Напишіть боту (або додайте його в групу) і надішліть будь-яке повідомлення.
 - Відкрийте в браузері:
-  - `https://api.telegram.org/bot<TELEGRAM_BOT_TOKEN>/getUpdates`
+  - `https://api.telegram.org/bot8748593421:AAHylWcJvvIiN3nXDs-XEJuBuv5W2TMP-3Y/getUpdates`
 - Знайдіть у відповіді `message.chat.id` — це і є `TELEGRAM_CHAT_ID`.
 
 ### 3) Важливо про безпеку
 
 - **Не комітьте токен** в репозиторій.
 - Якщо токен вже десь “засвітився” — **перевипустіть його** у BotFather і оновіть `TELEGRAM_BOT_TOKEN` на хостингу.
+
+### 4) Локальний запуск (щоб заявки теж приходили)
+
+Створіть файл `.env.local` (не комітьте його) і додайте:
+
+- `TELEGRAM_BOT_TOKEN=...`
+- `TELEGRAM_CHAT_ID=...`
+
+Потім:
+
+- `npm run dev`
