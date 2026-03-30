@@ -41,8 +41,8 @@ export function Header() {
       {/* Top info bar */}
       <div className="border-b border-white/10">
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-2 sm:flex-row sm:items-center sm:justify-around sm:gap-4 sm:px-6">
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-slate-200/90">
-            <div className="flex flex-row justify-around gap-x-2 lg:flex-col">
+          <div className="flex flex-wrap justify-around items-center gap-x-6 gap-y-2 text-xs text-slate-200/90">
+            <div className="flex flex-col justify-around gap-x-2 lg:flex-row">
               <a
                 href="tel:+380965984470"
                 className="inline-flex items-center gap-2 hover:text-white"
@@ -62,9 +62,9 @@ export function Header() {
               <IconPin className="h-4 w-4 opacity-90" />
               Україна
             </span>
-            <span className="items-center gap-2 lg:inline-flex">
+            <span className="items-center flex flex-row gap-2 lg:inline-flex">
               <IconPin className="h-4 w-4 opacity-90" />
-              33027, м. Ладижин, вул. Данила Галицького, 25а/1
+              33027, м. Ладижин.
             </span>
           </div>
         </div>

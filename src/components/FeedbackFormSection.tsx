@@ -60,12 +60,16 @@ export function FeedbackFormSection({
               });
 
               const json = (await res.json().catch(() => null)) as
-                | { ok?: boolean; error?: string }
+                | { ok?: boolean; error?: string; description?: string; errorCode?: number }
                 | null;
 
               if (!res.ok || !json?.ok) {
                 setStatus("error");
-                setErrorText(json?.error ?? "Не вдалося відправити. Спробуйте пізніше.");
+                const parts = [
+                  json?.error ?? "Не вдалося відправити. Спробуйте пізніше.",
+                  json?.description ? `(${json.description})` : "",
+                ].filter(Boolean);
+                setErrorText(parts.join(" "));
                 return;
               }
 

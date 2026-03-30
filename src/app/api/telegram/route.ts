@@ -64,10 +64,26 @@ export async function POST(req: Request) {
     }),
   });
 
-  if (!res.ok) {
-    const details = await res.text().catch(() => "");
+  const raw = await res.text().catch(() => "");
+  const parsed = (() => {
+    try {
+      return JSON.parse(raw) as { ok?: boolean; description?: string; error_code?: number };
+    } catch {
+      return null;
+    }
+  })();
+
+  if (!res.ok || parsed?.ok === false) {
+    const description =
+      parsed?.description ??
+      (raw ? raw.slice(0, 500) : "Telegram did not return a JSON error");
     return NextResponse.json(
-      { ok: false, error: "Telegram API error", details },
+      {
+        ok: false,
+        error: "Telegram API error",
+        description,
+        errorCode: parsed?.error_code,
+      },
       { status: 502 },
     );
   }

@@ -124,7 +124,7 @@ export function Footer() {
               </div>
               <div className="flex items-start gap-3">
                 <IconPin className="mt-0.5 h-4 w-4 shrink-0" />
-                <span>33027, м. Ладижин, вул. Данила Галицького, 25а/1 Україна</span>
+                <span>33027, м. Ладижин.</span>
               </div>
             </div>
           </div>
