@@ -44,14 +44,14 @@ export function Header() {
           <div className="flex flex-wrap justify-around items-center gap-x-6 gap-y-2 text-xs text-slate-200/90">
             <div className="flex flex-col justify-around gap-x-2 lg:flex-row">
               <a
-                href="tel:+380965984470"
+                href="tel:+380674428346"
                 className="inline-flex items-center gap-2 hover:text-white"
               >
                 <IconPhone className="h-4 w-4 opacity-90" />
                 +38 (067) 442 83 46
               </a>
               <a
-                href="tel:+380673823099"
+                href="tel:+380674428346"
                 className="inline-flex items-center gap-2 hover:text-white"
               >
                 <IconPhone className="h-4 w-4 opacity-90" />
