@@ -64,7 +64,7 @@ export function Header() {
             </span>
             <span className="items-center flex flex-row gap-2 lg:inline-flex">
               <IconPin className="h-4 w-4 opacity-90" />
-              33027, м. Ладижин.
+              24321, м. Ладижин.
             </span>
           </div>
         </div>
