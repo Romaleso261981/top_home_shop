@@ -5,59 +5,151 @@ declare(strict_types=1);
  * Заявки з лендінгу: SalesDrive → Bitrix24 → довільний вебхук → файл storage/orders.jsonl
  * SalesDrive API: https://api.salesdrive.me/api/docs/
  *
- * PHP не підвантажує .env сам — на початку читаємо .env та .env.local у корені сайту
- * (папка над /api/), як у Next.js; .env.local перезаписує .env.
+ * PHP: змінні з .env / .env.local (корінь сайту та папка api/), з api/salesdrive.secrets.php,
+ * потім getenv. Файловий шар працює навіть якщо putenv вимкнено на хостингу.
  */
 
-/** Корінь сайту: для …/www/api/order.php це …/www */
+/**
+ * Корінь сайту: для …/www/api/order.php це …/www
+ */
 function orderProjectRoot(): string
 {
   return dirname(__DIR__);
 }
 
-function loadPhpDotEnv(): void
+/**
+ * Змінні з файлів (на багатьох хостингах putenv() вимкнений — тільки так надійно).
+ * @var array<string, string>
+ */
+function orderFileEnv(): array
 {
-  $root = orderProjectRoot();
-  foreach (['.env', '.env.local'] as $file) {
-    $path = $root . '/' . $file;
-    if (!is_readable($path)) {
+  if (!isset($GLOBALS['ORDER_FILE_ENV']) || !is_array($GLOBALS['ORDER_FILE_ENV'])) {
+    $GLOBALS['ORDER_FILE_ENV'] = [];
+  }
+  /** @var array<string, string> $out */
+  $out = $GLOBALS['ORDER_FILE_ENV'];
+  return $out;
+}
+
+/**
+ * @param array<string, string> $pairs
+ */
+function orderFileEnvMerge(array $pairs): void
+{
+  $cur = orderFileEnv();
+  foreach ($pairs as $k => $v) {
+    if (!is_string($k) || $k === '') {
       continue;
     }
-    $raw = file_get_contents($path);
-    if ($raw === false) {
+    if (!is_string($v)) {
+      $v = (string)$v;
+    }
+    $cur[$k] = $v;
+  }
+  $GLOBALS['ORDER_FILE_ENV'] = $cur;
+}
+
+function orderMergeDotenvFile(string $path): bool
+{
+  if (!is_readable($path)) {
+    return false;
+  }
+  $raw = file_get_contents($path);
+  if ($raw === false || $raw === '') {
+    return false;
+  }
+  if (str_starts_with($raw, "\xEF\xBB\xBF")) {
+    $raw = substr($raw, 3);
+  }
+  $merged = [];
+  foreach (preg_split("/\r\n|\n|\r/", $raw) as $line) {
+    $line = trim($line);
+    if ($line === '' || str_starts_with($line, '#')) {
       continue;
     }
-    foreach (preg_split("/\r\n|\n|\r/", $raw) as $line) {
-      $line = trim($line);
-      if ($line === '' || str_starts_with($line, '#')) {
-        continue;
-      }
-      if (!str_contains($line, '=')) {
-        continue;
-      }
-      [$k, $v] = explode('=', $line, 2);
-      $k = trim($k);
-      $v = trim($v);
-      if ($k === '') {
-        continue;
-      }
-      if (strlen($v) >= 2 && (($v[0] === '"' && $v[strlen($v) - 1] === '"') || ($v[0] === "'" && $v[strlen($v) - 1] === "'"))) {
-        $v = stripcslashes(substr($v, 1, -1));
-      }
-      putenv($k . '=' . $v);
-      $_ENV[$k] = $v;
-      $_SERVER[$k] = $v;
+    if (str_starts_with($line, 'export ')) {
+      $line = trim(substr($line, 7));
     }
+    if (!str_contains($line, '=')) {
+      continue;
+    }
+    [$k, $v] = explode('=', $line, 2);
+    $k = trim($k);
+    $v = trim($v);
+    if ($k === '') {
+      continue;
+    }
+    $len = strlen($v);
+    if ($len >= 2 && (($v[0] === '"' && $v[$len - 1] === '"') || ($v[0] === "'" && $v[$len - 1] === "'"))) {
+      $v = stripcslashes(substr($v, 1, -1));
+    }
+    $merged[$k] = $v;
+  }
+  if ($merged === []) {
+    return false;
+  }
+  orderFileEnvMerge($merged);
+  return true;
+}
+
+function orderBootstrapEnv(): void
+{
+  $GLOBALS['ORDER_FILE_ENV'] = [];
+  $dirs = array_unique([
+    orderProjectRoot(),
+    __DIR__,
+  ]);
+  $loadedFrom = [];
+  foreach ($dirs as $dir) {
+    foreach (['.env', '.env.local'] as $file) {
+      $p = $dir . '/' . $file;
+      if (orderMergeDotenvFile($p)) {
+        $loadedFrom[] = $p;
+      }
+    }
+  }
+  $secrets = __DIR__ . '/salesdrive.secrets.php';
+  if (is_readable($secrets)) {
+    $data = include $secrets;
+    if (is_array($data)) {
+      $sec = [];
+      foreach ($data as $k => $v) {
+        if (is_string($k) && $k !== '' && (is_string($v) || is_int($v) || is_float($v))) {
+          $sec[$k] = (string)$v;
+        }
+      }
+      if ($sec !== []) {
+        orderFileEnvMerge($sec);
+        $loadedFrom[] = $secrets;
+      }
+    }
+  }
+  if ($loadedFrom !== []) {
+    $fe = orderFileEnv();
+    $hasSd = isset($fe['SALESDRIVE_API_KEY']) && $fe['SALESDRIVE_API_KEY'] !== '';
+    error_log('[order] env loaded from ' . count($loadedFrom) . ' file(s); SALESDRIVE_API_KEY_set=' . ($hasSd ? '1' : '0'));
+  } else {
+    $root = orderProjectRoot();
+    error_log('[order] no env files read. Tried: ' . $root . '/.env.local, ' . $root . '/.env, ' . __DIR__ . '/.env.local, ' . $secrets);
+  }
+  foreach (orderFileEnv() as $k => $v) {
+    @putenv($k . '=' . $v);
+    $_ENV[$k] = $v;
+    $_SERVER[$k] = $v;
   }
 }
 
-loadPhpDotEnv();
+orderBootstrapEnv();
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
 function formEnv(string $name): string
 {
+  $fileEnv = orderFileEnv();
+  if (isset($fileEnv[$name]) && is_string($fileEnv[$name]) && $fileEnv[$name] !== '') {
+    return $fileEnv[$name];
+  }
   $v = getenv($name);
   if ($v !== false && $v !== '') {
     return $v;
@@ -609,7 +701,7 @@ if (appendJsonl('orders.jsonl', array_merge($audit, ['channel' => 'file']))) {
   echo json_encode([
     'ok' => true,
     'delivery' => 'file',
-    'warning' => 'Заявку збережено лише у файлі на сервері (storage/orders.jsonl), не в CRM. У панелі хостингу задайте змінні SALESDRIVE_API_KEY і SALESDRIVE_DOMAIN для PHP.',
+    'warning' => 'Заявку збережено лише у файлі (storage/orders.jsonl), не в CRM. Оновіть api/order.php на сервері; ключі — у .env.local у корені сайту або в api/salesdrive.secrets.php (зразок: api/salesdrive.secrets.example.php). У логах Apache шукайте [order].',
   ], JSON_UNESCAPED_UNICODE);
   exit;
 }

@@ -26,6 +26,8 @@ SALESDRIVE_DOMAIN=monolit
 
 Додано **`public/.htaccess`**: за замовчуванням Apache не віддає файли на кшталт `.env.local` по HTTP (не покладайтеся лише на це — ключі не варто світити в скріншотах; при потребі перевипустіть API-ключ у SalesDrive).
 
+Також читаються **`.env` / `.env.local` у папці `api/`** (поруч із `order.php`) і опційно **`api/salesdrive.secrets.php`** — зручно, якщо **open_basedir** забороняє читати батьківський каталог. Зразок: `api/salesdrive.secrets.example.php` у репозиторії. У логах Apache шукайте рядки **`[order]`**: чи знайдено файли та чи встановлено ключ (`SALESDRIVE_API_KEY_set=1`).
+
 Якщо в адресному рядку кабінету `https://mixs-bud.salesdrive.me`, у `.env` має бути **`mixs-bud`**, а не корпоративний сайт (`mixs-bud.com.ua`) — інакше збирається хост `mixs-bud.com.ua.salesdrive.me` і виникає помилка сертифіката SSL. У коді додано нормалізація: з помилкового значення береться перша мітка (`mixs-bud`).
 
 ## Створення заявки з сайту

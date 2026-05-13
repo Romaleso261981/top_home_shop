@@ -35,6 +35,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# секрети SalesDrive поруч із order.php (копія з salesdrive.secrets.example.php)
+public/api/salesdrive.secrets.php
+
 # локальні заявки з форми (dev / fallback без вебхука)
 storage/*.jsonl
 
