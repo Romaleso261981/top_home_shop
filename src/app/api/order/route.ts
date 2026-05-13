@@ -230,7 +230,11 @@ export async function POST(req: Request) {
 
     await notifySuccessChannels(summary, fullText);
 
-    return NextResponse.json({ ok: true, orderId: sd.orderId });
+    return NextResponse.json({
+      ok: true,
+      orderId: sd.orderId,
+      delivery: "salesdrive",
+    });
   }
 
   if (bitrixUrl) {
@@ -299,7 +303,7 @@ export async function POST(req: Request) {
       JSON.stringify(auditBase, null, 2),
     );
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, delivery: "bitrix" });
   }
 
   if (webhookUrl) {
@@ -318,7 +322,7 @@ export async function POST(req: Request) {
       );
     }
     await notifySuccessChannels(`Заявка (webhook)\n${row.name} · ${phoneCrm}`, JSON.stringify(auditBase, null, 2));
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({ ok: true, delivery: "webhook" });
   }
 
   const saved = await logOrderReceived({ ...auditBase, channel: "file" });
@@ -335,5 +339,10 @@ export async function POST(req: Request) {
   }
 
   await notifySuccessChannels(`Заявка (файл)\n${row.name} · ${phoneCrm}`, JSON.stringify(auditBase, null, 2));
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({
+    ok: true,
+    delivery: "file",
+    warning:
+      "Заявку збережено лише у файлі на сервері (storage/orders.jsonl), не в CRM. Додайте SALESDRIVE_API_KEY і SALESDRIVE_DOMAIN у змінні середовища.",
+  });
 }

@@ -18,6 +18,9 @@ type FormSubmitResponse = {
   description?: string;
   details?: string;
   orderId?: number;
+  /** salesdrive | bitrix | webhook | file — з сервера після успіху */
+  delivery?: string;
+  warning?: string;
 };
 
 const SUBMIT_COOLDOWN_MS = 2200;
@@ -31,6 +34,7 @@ export function FeedbackFormSection({
     "idle" | "sending" | "success" | "error"
   >("idle");
   const [errorText, setErrorText] = useState<string>("");
+  const [successWarning, setSuccessWarning] = useState<string | null>(null);
   const lastSubmitAt = useRef(0);
 
   const canSubmit = useMemo(() => status !== "sending", [status]);
@@ -89,6 +93,7 @@ export function FeedbackFormSection({
 
             setStatus("sending");
             setErrorText("");
+            setSuccessWarning(null);
 
             const payload = {
               name,
@@ -159,6 +164,11 @@ export function FeedbackFormSection({
               }
 
               setStatus("success");
+              if (json?.delivery === "file" && typeof json.warning === "string") {
+                setSuccessWarning(json.warning);
+              } else {
+                setSuccessWarning(null);
+              }
               form.reset();
             } catch (err) {
               setStatus("error");
@@ -220,9 +230,14 @@ export function FeedbackFormSection({
           />
 
           {status === "success" ? (
-            <p className="mt-4 text-center text-base font-medium text-emerald-100">
-              Дякуємо, вашу заявку прийнято.
-            </p>
+            <div className="mt-4 space-y-2 text-center">
+              <p className="text-base font-medium text-emerald-100">
+                Дякуємо, вашу заявку прийнято.
+              </p>
+              {successWarning ? (
+                <p className="text-sm leading-relaxed text-amber-100">{successWarning}</p>
+              ) : null}
+            </div>
           ) : null}
           {status === "error" ? (
             <p className="mt-4 text-center text-sm text-rose-100">{errorText}</p>

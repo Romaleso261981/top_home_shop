@@ -509,7 +509,7 @@ if ($sdk !== '' && $sdDomain !== '') {
   $summary = "Нова заявка SalesDrive #$oid\n$name · $phoneCrm\n$serviceTitle\n$pageUrl";
   notifyTelegram($summary);
   notifyResend('Нова заявка з сайту', $summary . "\n\n" . json_encode($audit, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-  echo json_encode(['ok' => true, 'orderId' => $oid], JSON_UNESCAPED_UNICODE);
+  echo json_encode(['ok' => true, 'orderId' => $oid, 'delivery' => 'salesdrive'], JSON_UNESCAPED_UNICODE);
   exit;
 }
 
@@ -534,7 +534,7 @@ if ($bitrix !== '') {
   }
   notifyTelegram("Bitrix: нова заявка\n$name · $phoneCrm");
   notifyResend('Нова заявка з сайту (Bitrix)', json_encode($audit, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-  echo json_encode(['ok' => true], JSON_UNESCAPED_UNICODE);
+  echo json_encode(['ok' => true, 'delivery' => 'bitrix'], JSON_UNESCAPED_UNICODE);
   exit;
 }
 
@@ -553,13 +553,17 @@ if ($webhook !== '') {
     exit;
   }
   notifyTelegram("Заявка (webhook)\n$name · $phoneCrm");
-  echo json_encode(['ok' => true], JSON_UNESCAPED_UNICODE);
+  echo json_encode(['ok' => true, 'delivery' => 'webhook'], JSON_UNESCAPED_UNICODE);
   exit;
 }
 
 if (appendJsonl('orders.jsonl', array_merge($audit, ['channel' => 'file']))) {
   notifyTelegram("Заявка (файл)\n$name · $phoneCrm");
-  echo json_encode(['ok' => true], JSON_UNESCAPED_UNICODE);
+  echo json_encode([
+    'ok' => true,
+    'delivery' => 'file',
+    'warning' => 'Заявку збережено лише у файлі на сервері (storage/orders.jsonl), не в CRM. У панелі хостингу задайте змінні SALESDRIVE_API_KEY і SALESDRIVE_DOMAIN для PHP.',
+  ], JSON_UNESCAPED_UNICODE);
   exit;
 }
 
