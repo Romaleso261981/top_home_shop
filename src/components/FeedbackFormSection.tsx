@@ -1,11 +1,15 @@
 "use client";
 
 import { ctaButtonClass } from "@/components/buttonStyles";
-import { useMemo, useState } from "react";
+import { isValidUaPhone } from "@/lib/phone";
+import { parseUtmFromUrl } from "@/lib/utm";
+import { useMemo, useRef, useState } from "react";
 
 type FeedbackFormSectionProps = {
   title: string;
   buttonText: string;
+  /** Підставляється в поле «Послуга / товар» за замовчуванням */
+  defaultServiceName?: string;
 };
 
 type FormSubmitResponse = {
@@ -13,16 +17,21 @@ type FormSubmitResponse = {
   error?: string;
   description?: string;
   details?: string;
+  orderId?: number;
 };
+
+const SUBMIT_COOLDOWN_MS = 2200;
 
 export function FeedbackFormSection({
   title,
   buttonText,
+  defaultServiceName = "",
 }: FeedbackFormSectionProps) {
   const [status, setStatus] = useState<
     "idle" | "sending" | "success" | "error"
   >("idle");
   const [errorText, setErrorText] = useState<string>("");
+  const lastSubmitAt = useRef(0);
 
   const canSubmit = useMemo(() => status !== "sending", [status]);
 
@@ -35,21 +44,65 @@ export function FeedbackFormSection({
           className="mt-8"
           onSubmit={async (e) => {
             e.preventDefault();
-            if (!canSubmit) return;
+            if (!canSubmit) {
+              return;
+            }
 
-            setStatus("sending");
-            setErrorText("");
+            const now = Date.now();
+            if (now - lastSubmitAt.current < SUBMIT_COOLDOWN_MS) {
+              return;
+            }
+            lastSubmitAt.current = now;
 
             const form = e.currentTarget;
             const fd = new FormData(form);
 
+            const name = String(fd.get("name") ?? "").trim();
+            const phone = String(fd.get("phone") ?? "").trim();
+            const email = String(fd.get("email") ?? "").trim();
+            const message = String(fd.get("message") ?? "").trim();
+            const service = String(fd.get("service") ?? "").trim();
+            const website = String(fd.get("website") ?? "").trim();
+
+            if (!phone) {
+              setStatus("error");
+              setErrorText("Вкажіть номер телефону.");
+              return;
+            }
+            if (!isValidUaPhone(phone)) {
+              setStatus("error");
+              setErrorText(
+                "Некоректний номер телефону. Використайте український формат, наприклад 067 123 45 67.",
+              );
+              return;
+            }
+
+            if (!name && !message && !service) {
+              setStatus("error");
+              setErrorText("Заповніть ім’я, послугу або повідомлення.");
+              return;
+            }
+
+            const pageUrl =
+              typeof window !== "undefined" ? window.location.href : "";
+            const utm = parseUtmFromUrl(pageUrl);
+
+            setStatus("sending");
+            setErrorText("");
+
             const payload = {
-              name: String(fd.get("name") ?? "").trim(),
-              phone: String(fd.get("phone") ?? "").trim(),
-              email: String(fd.get("email") ?? "").trim(),
-              message: String(fd.get("message") ?? "").trim(),
-              website: String(fd.get("website") ?? "").trim(), // honeypot
-              pageUrl: typeof window !== "undefined" ? window.location.href : "",
+              name,
+              phone,
+              email,
+              message,
+              service,
+              website,
+              pageUrl,
+              utm_source: utm.utm_source,
+              utm_medium: utm.utm_medium,
+              utm_campaign: utm.utm_campaign,
+              utm_content: utm.utm_content,
+              utm_term: utm.utm_term,
             };
 
             try {
@@ -83,42 +136,72 @@ export function FeedbackFormSection({
                   (res.status >= 500
                     ? "Сервер тимчасово недоступний. Спробуйте пізніше."
                     : "Не вдалося відправити. Спробуйте пізніше.");
+                const rawDetails =
+                  json?.details && typeof json.details === "string"
+                    ? json.details.trim()
+                    : "";
+                const detail =
+                  rawDetails.length > 0 ? rawDetails.slice(0, 280) : "";
+                const detailSuffix = rawDetails.length > 280 ? "…" : "";
                 const parts = [
                   base,
                   json?.description ? `(${json.description})` : "",
+                  detail ? ` — ${detail}${detailSuffix}` : "",
                 ].filter(Boolean);
-                setErrorText(parts.join(" "));
+                const fullMsg = parts.join(" ");
+                setErrorText(fullMsg);
+                console.error("[FeedbackForm] submit failed", {
+                  status: res.status,
+                  body: json,
+                  raw: raw.slice(0, 1500),
+                });
                 return;
               }
 
               setStatus("success");
               form.reset();
-            } catch {
+            } catch (err) {
               setStatus("error");
-              setErrorText("Не вдалося відправити. Перевірте інтернет і спробуйте ще раз.");
+              setErrorText(
+                "Не вдалося відправити. Перевірте інтернет і спробуйте ще раз.",
+              );
+              console.error("[FeedbackForm] network error", err);
             }
           }}
         >
-          <div className="grid gap-4 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2">
             <input
               type="text"
               name="name"
+              autoComplete="name"
               placeholder="Ваше ім'я"
               className="h-12 w-full border-0 bg-white px-5 text-zinc-900 shadow-sm outline-none placeholder:text-zinc-400"
             />
             <input
               type="tel"
               name="phone"
-              placeholder="Ваш телефон"
-              className="h-12 w-full border-0 bg-white px-5 text-zinc-900 shadow-sm outline-none placeholder:text-zinc-400"
-            />
-            <input
-              type="email"
-              name="email"
-              placeholder="Ваш емейл"
+              required
+              autoComplete="tel"
+              placeholder="Телефон * (наприклад 067 123 45 67)"
               className="h-12 w-full border-0 bg-white px-5 text-zinc-900 shadow-sm outline-none placeholder:text-zinc-400"
             />
           </div>
+
+          <input
+            type="text"
+            name="service"
+            defaultValue={defaultServiceName}
+            placeholder="Назва послуги або товару"
+            className="mt-4 h-12 w-full border-0 bg-white px-5 text-zinc-900 shadow-sm outline-none placeholder:text-zinc-400"
+          />
+
+          <input
+            type="email"
+            name="email"
+            autoComplete="email"
+            placeholder="Email (необов’язково)"
+            className="mt-4 h-12 w-full border-0 bg-white px-5 text-zinc-900 shadow-sm outline-none placeholder:text-zinc-400"
+          />
 
           <input
             type="text"
@@ -131,14 +214,14 @@ export function FeedbackFormSection({
 
           <textarea
             name="message"
-            placeholder="Напишіть питання"
-            rows={9}
+            placeholder="Коментар або питання"
+            rows={7}
             className="mt-4 w-full border-0 bg-white px-5 py-4 text-zinc-900 shadow-sm outline-none placeholder:text-zinc-400"
           />
 
           {status === "success" ? (
-            <p className="mt-4 text-center text-sm text-emerald-100">
-              Дякуємо! Повідомлення відправлено.
+            <p className="mt-4 text-center text-base font-medium text-emerald-100">
+              Дякуємо, вашу заявку прийнято.
             </p>
           ) : null}
           {status === "error" ? (
@@ -159,4 +242,3 @@ export function FeedbackFormSection({
     </section>
   );
 }
-

@@ -54,6 +54,7 @@ export default function Home() {
         <FeedbackFormSection
           title="Залишились питання?"
           buttonText="Відправити питання"
+          defaultServiceName="Консультація: промислові бетонні підлоги та стяжки"
         />
         {/* <AboutSection /> */}
         {/* <TypesSection /> */}

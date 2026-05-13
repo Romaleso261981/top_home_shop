@@ -65,9 +65,18 @@ ssh-keygen -t ed25519 -C "github-actions-deploy" -f deploy_key -N ""
 
 Форма відправляє POST (JSON) на **`public/api/order.php`** (у збірці — `out/api/order.php`). Локально при `npm run dev` використовується **`/api/order`** (`src/app/api/order/route.ts`).
 
-Порядок спрацьовування: **Bitrix24** (якщо задано URL) → **довільний вебхук** `FORM_WEBHOOK_URL` → **файл** `storage/orders.jsonl`.
+**Порядок:** **SalesDrive** (`SALESDRIVE_API_KEY` + `SALESDRIVE_DOMAIN`) → **Bitrix24** → **`FORM_WEBHOOK_URL`** → **файл** `storage/orders.jsonl`. Детально про SalesDrive: файл **`SALESDRIVE.md`** у репозиторії.
+
+### SalesDrive (коротко)
+
+- Ключ: кабінет → **Установки → … → API**; заголовок запиту: **`X-Api-Key`**.
+- Домен: лише піддомен (наприклад `monolit` для `https://monolit.salesdrive.me`).
+- Заявка створюється запитом **POST** на `https://{домен}.salesdrive.me/handler/`.
+- Статус «Нова заявка»: ID з **GET** `https://{домен}.salesdrive.me/api/statuses/` → змінна **`SALESDRIVE_STATUS_ID`**.
 
 ### Bitrix24 — вхідний вебхук і лід
+
+*(Нижче — лише якщо SalesDrive **не** налаштований; інакше спочатку завжди SalesDrive.)*
 
 Потрібен **повний URL виклику REST-методу** `crm.lead.add` (не просто «база» вебхука без назви методу).
 
@@ -101,14 +110,14 @@ BITRIX24_LEAD_WEBHOOK_URL=https://ваш-портал.bitrix24.ua/rest/1/СЕК�
 
 ### Довільний вебхук (не Bitrix)
 
-Якщо **`BITRIX24_LEAD_WEBHOOK_URL`** (і **`CRM_BITRIX_LEAD_WEBHOOK_URL`**) **не задані**, використовується **`FORM_WEBHOOK_URL`** — POST з JSON-полями:
+Якщо **немає** ні Bitrix-URL (або SalesDrive перекриває), використовується **`FORM_WEBHOOK_URL`** — POST з JSON-полями:
 
-`source`, `name`, `phone`, `email`, `message`, `pageUrl`
+`source`, `name`, `phone`, `email`, `message`, `service`, `pageUrl`, `utm_*`, `submittedAt`
 
 ### Файл на сервері
 
-Якщо **немає** ні Bitrix-URL, ні `FORM_WEBHOOK_URL`, PHP дописує заявки в **`storage/orders.jsonl`** у корені сайту. Папка `storage/` має бути доступна для запису PHP.
+Якщо **немає** ні SalesDrive, ні Bitrix-URL, ні `FORM_WEBHOOK_URL`, PHP дописує заявки в **`storage/orders.jsonl`** у корені сайту. Папка `storage/` має бути доступна для запису PHP.
 
 ### Локально (підсумок)
 
-У `.env.local` достатньо **або** `BITRIX24_LEAD_WEBHOOK_URL`, **або** `FORM_WEBHOOK_URL`. Якщо жодної змінної немає, заявки пишуться в **`storage/orders.jsonl`** у проєкті.
+У `.env.local` задайте **або** SalesDrive (`SALESDRIVE_API_KEY` + `SALESDRIVE_DOMAIN`, див. **`SALESDRIVE.md`**), **або** Bitrix, **або** `FORM_WEBHOOK_URL`. Якщо нічого з каналів не задано, заявки пишуться в **`storage/orders.jsonl`** у проєкті.
