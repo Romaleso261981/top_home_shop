@@ -1,0 +1,6 @@
+# Заборонити віддачу секретів через веб (Apache 2.4+)
+<IfModule mod_authz_core.c>
+  <FilesMatch "^\.env">
+    Require all denied
+  </FilesMatch>
+</IfModule>

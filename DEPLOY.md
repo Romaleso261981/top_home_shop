@@ -66,7 +66,7 @@ ssh-keygen -t ed25519 -C "github-actions-deploy" -f deploy_key -N ""
 Форма відправляє POST (JSON) на **`public/api/order.php`** (у збірці — `out/api/order.php`). Локально при `npm run dev` використовується **`/api/order`** (`src/app/api/order/route.ts`).
 
 **Порядок:** **SalesDrive** (`SALESDRIVE_API_KEY` + `SALESDRIVE_DOMAIN`) → **Bitrix24** → **`FORM_WEBHOOK_URL`** → **файл** `storage/orders.jsonl`. Детально про SalesDrive: **`SALESDRIVE.md`**.  
-**Увага:** на хостингу PHP **не** читає `.env.local` з вашого ПК — змінні SalesDrive треба задати в **панелі хостингу** для PHP, інакше заявки потраплятимуть лише у файл `storage/orders.jsonl`, а у CRM — ні.
+**Увага:** на хостингу PHP **не** читає `.env.local` з вашого ПК; достатньо покласти **`.env.local` у корінь сайту** на сервері (поруч із `package.json`) — **`order.php` завантажує** з нього `SALESDRIVE_*` (див. **`SALESDRIVE.md`**). Альтернатива — змінні в панелі хостингу для PHP.
 
 ### SalesDrive (коротко)
 

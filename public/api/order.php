@@ -4,7 +4,54 @@ declare(strict_types=1);
 /**
  * Заявки з лендінгу: SalesDrive → Bitrix24 → довільний вебхук → файл storage/orders.jsonl
  * SalesDrive API: https://api.salesdrive.me/api/docs/
+ *
+ * PHP не підвантажує .env сам — на початку читаємо .env та .env.local у корені сайту
+ * (папка над /api/), як у Next.js; .env.local перезаписує .env.
  */
+
+/** Корінь сайту: для …/www/api/order.php це …/www */
+function orderProjectRoot(): string
+{
+  return dirname(__DIR__);
+}
+
+function loadPhpDotEnv(): void
+{
+  $root = orderProjectRoot();
+  foreach (['.env', '.env.local'] as $file) {
+    $path = $root . '/' . $file;
+    if (!is_readable($path)) {
+      continue;
+    }
+    $raw = file_get_contents($path);
+    if ($raw === false) {
+      continue;
+    }
+    foreach (preg_split("/\r\n|\n|\r/", $raw) as $line) {
+      $line = trim($line);
+      if ($line === '' || str_starts_with($line, '#')) {
+        continue;
+      }
+      if (!str_contains($line, '=')) {
+        continue;
+      }
+      [$k, $v] = explode('=', $line, 2);
+      $k = trim($k);
+      $v = trim($v);
+      if ($k === '') {
+        continue;
+      }
+      if (strlen($v) >= 2 && (($v[0] === '"' && $v[strlen($v) - 1] === '"') || ($v[0] === "'" && $v[strlen($v) - 1] === "'"))) {
+        $v = stripcslashes(substr($v, 1, -1));
+      }
+      putenv($k . '=' . $v);
+      $_ENV[$k] = $v;
+      $_SERVER[$k] = $v;
+    }
+  }
+}
+
+loadPhpDotEnv();
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
