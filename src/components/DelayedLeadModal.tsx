@@ -3,11 +3,19 @@
 import { isValidUaPhone } from "@/lib/phone";
 import { parseUtmFromUrl } from "@/lib/utm";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
-/** Інтервал (мс) після завантаження сторінки, після якого з’являється банер. */
-export const LEAD_MODAL_SHOW_AFTER_MS = 8_000;
+/** Мінімальний час на сторінці (мс) перед показом за скролом — щоб не з’являвся миттєво під час завантаження. */
+const MIN_MS_BEFORE_SCROLL_SHOW = 3_000;
 
-const SESSION_KEY = "lead_modal_handled";
+/** Поріг вертикального скролу (px), після якого можна показати банер (раніше за таймер). */
+const SCROLL_Y_TRIGGER = 140;
+
+/** Інтервал (мс) після завантаження сторінки, після якого з’являється банер, якщо скрол ще не спрацював. */
+export const LEAD_MODAL_SHOW_AFTER_MS = 6_000;
+
+/** Не показувати знову після успішної відправки заявки (одна вкладка браузера). Закриття хрестиком блокує лише до перезавантаження сторінки. */
+const SESSION_KEY_SUBMITTED = "lead_modal_submitted";
 
 type FormSubmitResponse = {
   ok?: boolean;
@@ -29,22 +37,63 @@ export function DelayedLeadModal() {
   );
   const [errorText, setErrorText] = useState("");
   const lastSubmitAt = useRef(0);
+  const mountAt = useRef(0);
+  const openedRef = useRef(false);
+
+  const tryOpen = useCallback(() => {
+    if (openedRef.current) {
+      return;
+    }
+    openedRef.current = true;
+    setOpen(true);
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
     try {
-      if (sessionStorage.getItem(SESSION_KEY) === "1") {
+      if (sessionStorage.getItem(SESSION_KEY_SUBMITTED) === "1") {
         return;
       }
     } catch {
       /* ignore */
     }
 
-    const t = window.setTimeout(() => setOpen(true), LEAD_MODAL_SHOW_AFTER_MS);
-    return () => window.clearTimeout(t);
-  }, []);
+    mountAt.current = Date.now();
+
+    const t = window.setTimeout(() => {
+      tryOpen();
+    }, LEAD_MODAL_SHOW_AFTER_MS);
+
+    const getScrollY = () =>
+      window.scrollY ||
+      document.documentElement.scrollTop ||
+      document.body.scrollTop ||
+      0;
+
+    const onScroll = () => {
+      if (openedRef.current) {
+        return;
+      }
+      if (getScrollY() < SCROLL_Y_TRIGGER) {
+        return;
+      }
+      if (Date.now() - mountAt.current < MIN_MS_BEFORE_SCROLL_SHOW) {
+        return;
+      }
+      window.clearTimeout(t);
+      tryOpen();
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+
+    return () => {
+      window.clearTimeout(t);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [tryOpen]);
 
   useEffect(() => {
     if (!open || typeof document === "undefined") {
@@ -59,24 +108,19 @@ export function DelayedLeadModal() {
 
   const dismiss = useCallback(() => {
     setOpen(false);
-    try {
-      sessionStorage.setItem(SESSION_KEY, "1");
-    } catch {
-      /* ignore */
-    }
   }, []);
 
   const handleClose = useCallback(() => {
     dismiss();
   }, [dismiss]);
 
-  if (!open) {
+  if (!open || typeof document === "undefined") {
     return null;
   }
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-100 flex items-center justify-center p-4"
+      className="fixed inset-0 z-10000 flex items-center justify-center p-4"
       role="presentation"
     >
       <button
@@ -86,7 +130,7 @@ export function DelayedLeadModal() {
         onClick={handleClose}
       />
       <div
-        className="relative z-101 w-full max-w-[min(100%,26rem)] rounded-lg bg-white px-6 py-8 shadow-2xl sm:px-8"
+        className="relative z-10001 w-full max-w-[min(100%,26rem)] rounded-lg bg-white px-6 py-8 shadow-2xl sm:px-8"
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
@@ -200,6 +244,11 @@ export function DelayedLeadModal() {
 
                 setStatus("success");
                 form.reset();
+                try {
+                  sessionStorage.setItem(SESSION_KEY_SUBMITTED, "1");
+                } catch {
+                  /* ignore */
+                }
                 window.setTimeout(() => {
                   dismiss();
                 }, 2200);
@@ -241,6 +290,7 @@ export function DelayedLeadModal() {
           </form>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
