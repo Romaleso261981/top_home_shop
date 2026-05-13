@@ -5,22 +5,24 @@ declare(strict_types=1);
  * Заявки з лендінгу: SalesDrive → Bitrix24 → довільний вебхук → файл storage/orders.jsonl
  * SalesDrive API: https://api.salesdrive.me/api/docs/
  *
- * PHP: Bitrix / Telegram / Resend — як і раніше з .env та getenv (див. orderBootstrapEnv).
- * SalesDrive — лише константи ORDER_SALESDRIVE_* нижче (без змінних середовища).
+ * PHP: Bitrix / Telegram / Resend — з .env та getenv (див. orderBootstrapEnv).
+ * SalesDrive: SALESDRIVE_* з .env / панелі, потім константи ORDER_SALESDRIVE_*.
+ * Читання .env: корінь репозиторію (як Next: top_home_shop/.env.local), далі public/, public/api/ — пізніші файли перезаписують ключі.
  */
 
-/** API-ключ з кабінету SalesDrive («інтеграція з сайтом»). Не комітьте секрет у публічний git. */
+/** Запас, якщо немає SALESDRIVE_API_KEY у .env. Не комітьте секрет у публічний git. */
 const ORDER_SALESDRIVE_API_KEY = '';
 
-/** Піддомен без .salesdrive.me, наприклад mixs-bud */
+/** Запас, якщо немає SALESDRIVE_DOMAIN. Лише піддомен без .salesdrive.me, наприклад mixs-bud */
 const ORDER_SALESDRIVE_DOMAIN = '';
 
-/** Порожньо = не передавати; інакше лише цифри, наприклад 123 */
+/** Запас для SALESDRIVE_STATUS_ID. Порожньо = не передавати */
 const ORDER_SALESDRIVE_STATUS_ID = '';
 
-/** Порожньо = тип заявки 1 (онлайн) */
+/** Запас для SALESDRIVE_TYPE_ID. Порожньо = тип заявки 1 (онлайн) */
 const ORDER_SALESDRIVE_TYPE_ID = '';
 
+/** Запас для SALESDRIVE_ORGANIZATION_ID */
 const ORDER_SALESDRIVE_ORGANIZATION_ID = '';
 
 /**
@@ -109,10 +111,10 @@ function orderMergeDotenvFile(string $path): bool
 function orderBootstrapEnv(): void
 {
   $GLOBALS['ORDER_FILE_ENV'] = [];
-  $dirs = array_unique([
-    orderProjectRoot(),
-    __DIR__,
-  ]);
+  $webRoot = orderProjectRoot();
+  /** Батько public/ — корінь проєкту з package.json і .env.local (як у Next.js). */
+  $repoRoot = dirname($webRoot);
+  $dirs = array_values(array_unique([$repoRoot, $webRoot, __DIR__]));
   $loadedFrom = [];
   foreach ($dirs as $dir) {
     foreach (['.env', '.env.local'] as $file) {
@@ -140,11 +142,15 @@ function orderBootstrapEnv(): void
   }
   if ($loadedFrom !== []) {
     $fe = orderFileEnv();
-    $hasSd = isset($fe['SALESDRIVE_API_KEY']) && $fe['SALESDRIVE_API_KEY'] !== '';
-    error_log('[order] env loaded from ' . count($loadedFrom) . ' file(s); SALESDRIVE_API_KEY_set=' . ($hasSd ? '1' : '0'));
+    $hasSd = (isset($fe['SALESDRIVE_API_KEY']) && $fe['SALESDRIVE_API_KEY'] !== '')
+      || trim(ORDER_SALESDRIVE_API_KEY) !== '';
+    error_log('[order] env loaded from ' . count($loadedFrom) . ' file(s); salesdrive_key_set=' . ($hasSd ? '1' : '0'));
   } else {
-    $root = orderProjectRoot();
-    error_log('[order] no env files read. Tried: ' . $root . '/.env.local, ' . $root . '/.env, ' . __DIR__ . '/.env.local, ' . $secrets);
+    $parts = [];
+    foreach ($dirs as $dir) {
+      $parts[] = $dir . '/.env, ' . $dir . '/.env.local';
+    }
+    error_log('[order] no env files read. Tried: ' . implode('; ', $parts) . '; ' . $secrets);
   }
   foreach (orderFileEnv() as $k => $v) {
     @putenv($k . '=' . $v);
@@ -175,6 +181,24 @@ function formEnv(string $name): string
     return $_SERVER[$name];
   }
   return '';
+}
+
+function orderResolveSalesDriveString(string $envName, string $constantFallback): string
+{
+  $e = trim(formEnv($envName));
+  if ($e !== '') {
+    return $e;
+  }
+  return trim($constantFallback);
+}
+
+function orderResolveSalesDriveOptionalInt(string $envName, string $constantRaw): ?int
+{
+  $e = trim(formEnv($envName));
+  if ($e !== '') {
+    return orderHardcodedOptionalInt($e);
+  }
+  return orderHardcodedOptionalInt($constantRaw);
 }
 
 function resolveBitrixLeadWebhookUrl(): string
@@ -578,8 +602,8 @@ $audit = [
 
 $lead = $audit;
 
-$sdk = trim(ORDER_SALESDRIVE_API_KEY);
-$sdDomain = trim(ORDER_SALESDRIVE_DOMAIN);
+$sdk = orderResolveSalesDriveString('SALESDRIVE_API_KEY', ORDER_SALESDRIVE_API_KEY);
+$sdDomain = orderResolveSalesDriveString('SALESDRIVE_DOMAIN', ORDER_SALESDRIVE_DOMAIN);
 
 if ($sdk !== '' && $sdDomain !== '') {
   $serviceTitle = $service !== '' ? $service : 'Заявка з сайту';
@@ -604,7 +628,7 @@ if ($sdk !== '' && $sdDomain !== '') {
     'phone' => $phoneCrm,
     'email' => $email,
     'comment' => $comment,
-    'typeId' => orderHardcodedOptionalInt(ORDER_SALESDRIVE_TYPE_ID) ?? 1,
+    'typeId' => orderResolveSalesDriveOptionalInt('SALESDRIVE_TYPE_ID', ORDER_SALESDRIVE_TYPE_ID) ?? 1,
     'products' => [[
       'id' => 'landing-service',
       'name' => $serviceTitle,
@@ -634,11 +658,11 @@ if ($sdk !== '' && $sdDomain !== '') {
   if ($pageUrl !== '') {
     $body['utmPage'] = $pageUrl;
   }
-  $sid = orderHardcodedOptionalInt(ORDER_SALESDRIVE_STATUS_ID);
+  $sid = orderResolveSalesDriveOptionalInt('SALESDRIVE_STATUS_ID', ORDER_SALESDRIVE_STATUS_ID);
   if ($sid !== null) {
     $body['statusId'] = $sid;
   }
-  $org = orderHardcodedOptionalInt(ORDER_SALESDRIVE_ORGANIZATION_ID);
+  $org = orderResolveSalesDriveOptionalInt('SALESDRIVE_ORGANIZATION_ID', ORDER_SALESDRIVE_ORGANIZATION_ID);
   if ($org !== null) {
     $body['organizationId'] = $org;
   }
@@ -713,7 +737,7 @@ if (appendJsonl('orders.jsonl', array_merge($audit, ['channel' => 'file']))) {
   echo json_encode([
     'ok' => true,
     'delivery' => 'file',
-    'warning' => 'Заявку збережено лише у файлі (storage/orders.jsonl), не в CRM. У public/api/order.php заповніть константи ORDER_SALESDRIVE_API_KEY та ORDER_SALESDRIVE_DOMAIN (зверху файлу). У логах Apache — рядки [order].',
+    'warning' => 'Заявку збережено лише у файлі (storage/orders.jsonl), не в CRM. Додайте SALESDRIVE_API_KEY і SALESDRIVE_DOMAIN у .env.local у корені сайту (або api/.env.local) або константи ORDER_SALESDRIVE_* у order.php. У логах Apache — [order].',
   ], JSON_UNESCAPED_UNICODE);
   exit;
 }
@@ -721,5 +745,5 @@ if (appendJsonl('orders.jsonl', array_merge($audit, ['channel' => 'file']))) {
 http_response_code(500);
 echo json_encode([
   'ok' => false,
-  'error' => 'Не вдалося зберегти заявку. Заповніть ORDER_SALESDRIVE_API_KEY і ORDER_SALESDRIVE_DOMAIN у public/api/order.php або інший канал.',
+  'error' => 'Не вдалося зберегти заявку. Налаштуйте SalesDrive (SALESDRIVE_API_KEY + SALESDRIVE_DOMAIN у .env.local або ORDER_SALESDRIVE_* у order.php) або інший канал.',
 ], JSON_UNESCAPED_UNICODE);

@@ -9,12 +9,11 @@ import {
 } from "@/lib/salesdrive";
 import { sendTelegramOrderNotification } from "@/lib/telegramNotify";
 import {
-  HARDCODED_SALESDRIVE_API_KEY,
-  HARDCODED_SALESDRIVE_DOMAIN,
-  HARDCODED_SALESDRIVE_ORGANIZATION_ID,
-  HARDCODED_SALESDRIVE_STATUS_ID,
-  HARDCODED_SALESDRIVE_TYPE_ID,
-  optionalHardcodedPositiveInt,
+  resolveSalesDriveApiKey,
+  resolveSalesDriveDomain,
+  resolveSalesDriveOrganizationId,
+  resolveSalesDriveStatusId,
+  resolveSalesDriveTypeId,
 } from "@/config/salesdriveCredentials";
 
 type BitrixLeadAddResponse = {
@@ -105,8 +104,8 @@ async function notifySuccessChannels(
 }
 
 export async function POST(req: Request) {
-  const salesdriveKey = HARDCODED_SALESDRIVE_API_KEY.trim();
-  const salesdriveDomain = HARDCODED_SALESDRIVE_DOMAIN.trim();
+  const salesdriveKey = resolveSalesDriveApiKey();
+  const salesdriveDomain = resolveSalesDriveDomain();
   const bitrixUrl = resolveBitrixLeadWebhookUrl();
   const webhookUrl = process.env.FORM_WEBHOOK_URL?.trim() ?? "";
 
@@ -187,9 +186,9 @@ export async function POST(req: Request) {
 
   if (salesdriveKey && salesdriveDomain) {
     const sdBody = buildSalesDriveOrderBody(landingInput, {
-      statusId: optionalHardcodedPositiveInt(HARDCODED_SALESDRIVE_STATUS_ID),
-      typeId: optionalHardcodedPositiveInt(HARDCODED_SALESDRIVE_TYPE_ID) ?? 1,
-      organizationId: optionalHardcodedPositiveInt(HARDCODED_SALESDRIVE_ORGANIZATION_ID),
+      statusId: resolveSalesDriveStatusId(),
+      typeId: resolveSalesDriveTypeId() ?? 1,
+      organizationId: resolveSalesDriveOrganizationId(),
     });
 
     const sd = await sendSalesDriveOrder(salesdriveDomain, salesdriveKey, sdBody);
@@ -331,7 +330,7 @@ export async function POST(req: Request) {
       {
         ok: false,
         error:
-          "Не вдалося зберегти заявку. Заповніть HARDCODED_SALESDRIVE_* у src/config/salesdriveCredentials.ts або інший канал у .env.local.",
+          "Не вдалося зберегти заявку. Додайте SALESDRIVE_API_KEY і SALESDRIVE_DOMAIN у .env.local (або інший канал: Bitrix / webhook).",
       },
       { status: 500 },
     );
