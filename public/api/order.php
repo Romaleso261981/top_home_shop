@@ -7,7 +7,7 @@ declare(strict_types=1);
  *
  * PHP: Bitrix / Telegram / Resend — з .env та getenv (див. orderBootstrapEnv).
  * SalesDrive: SALESDRIVE_* з .env / панелі, потім константи ORDER_SALESDRIVE_*.
- * Читання .env: корінь репозиторію (як Next: top_home_shop/.env.local), далі public/, public/api/ — пізніші файли перезаписують ключі.
+ * Читання .env: сусідня top_home_shop/ (якщо PHP у www/), корінь репо, public/, public/api/ — пізніші перезаписують ключі.
  */
 
 /** Запас, якщо немає SALESDRIVE_API_KEY у .env. Не комітьте секрет у публічний git. */
@@ -112,9 +112,28 @@ function orderBootstrapEnv(): void
 {
   $GLOBALS['ORDER_FILE_ENV'] = [];
   $webRoot = orderProjectRoot();
-  /** Батько public/ — корінь проєкту з package.json і .env.local (як у Next.js). */
-  $repoRoot = dirname($webRoot);
-  $dirs = array_values(array_unique([$repoRoot, $webRoot, __DIR__]));
+  /** Батько public/ або www/ — наприклад …/mixs-bud.com.ua */
+  $aboveWeb = dirname($webRoot);
+  /** Типовий Next: …/top_home_shop/public/api → батько public = корінь репо з package.json */
+  $repoRoot = $aboveWeb;
+
+  $dirs = [];
+  /**
+   * Частий кейс на хостингу: document root = www/, order.php у www/api/,
+   * а .env.local лежить у сусідній теці top_home_shop/ (не всередині www).
+   */
+  $siblingShop = $aboveWeb . DIRECTORY_SEPARATOR . 'top_home_shop';
+  if (is_dir($siblingShop)) {
+    $dirs[] = $siblingShop;
+  }
+  $dirs[] = $repoRoot;
+  $dirs[] = $webRoot;
+  $dirs[] = __DIR__;
+
+  $dirs = array_values(array_unique(array_filter($dirs, static function ($d): bool {
+    return is_string($d) && $d !== '' && is_dir($d);
+  })));
+
   $loadedFrom = [];
   foreach ($dirs as $dir) {
     foreach (['.env', '.env.local'] as $file) {
@@ -144,7 +163,7 @@ function orderBootstrapEnv(): void
     $fe = orderFileEnv();
     $hasSd = (isset($fe['SALESDRIVE_API_KEY']) && $fe['SALESDRIVE_API_KEY'] !== '')
       || trim(ORDER_SALESDRIVE_API_KEY) !== '';
-    error_log('[order] env loaded from ' . count($loadedFrom) . ' file(s); salesdrive_key_set=' . ($hasSd ? '1' : '0'));
+    error_log('[order] env loaded: ' . implode(' | ', $loadedFrom) . ' ; salesdrive_key_set=' . ($hasSd ? '1' : '0'));
   } else {
     $parts = [];
     foreach ($dirs as $dir) {
@@ -737,7 +756,7 @@ if (appendJsonl('orders.jsonl', array_merge($audit, ['channel' => 'file']))) {
   echo json_encode([
     'ok' => true,
     'delivery' => 'file',
-    'warning' => 'Заявку збережено лише у файлі (storage/orders.jsonl), не в CRM. Додайте SALESDRIVE_API_KEY і SALESDRIVE_DOMAIN у .env.local у корені сайту (або api/.env.local) або константи ORDER_SALESDRIVE_* у order.php. У логах Apache — [order].',
+    'warning' => 'Заявку збережено лише у файлі (storage/orders.jsonl), не в CRM. Додайте SALESDRIVE_API_KEY і SALESDRIVE_DOMAIN у .env.local (папка з package.json, сусідня top_home_shop/ якщо сайт у www/, або public/api/) або константи ORDER_SALESDRIVE_* у order.php. Оновіть order.php з репозиторію. У логах — [order].',
   ], JSON_UNESCAPED_UNICODE);
   exit;
 }
