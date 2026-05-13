@@ -58,7 +58,7 @@ export function FeedbackFormSection({
                 (window.location.hostname === "localhost" ||
                   window.location.hostname === "127.0.0.1");
 
-              const endpoint = isLocal ? "/api/crm" : "/api/crm.php";
+              const endpoint = isLocal ? "/api/order" : "/api/order.php";
 
               const res = await fetch(endpoint, {
                 method: "POST",

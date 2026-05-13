@@ -61,34 +61,22 @@ ssh-keygen -t ed25519 -C "github-actions-deploy" -f deploy_key -N ""
 
 При помилці перевірте лог кроків «Check deployment secrets» та «Deploy via SSH».
 
-## Заявки в CRM (Bitrix24 / універсальний вебхук)
+## Заявки з форми
 
-Форма відправляє POST на **`public/api/crm.php`** (після збірки потрапляє в `out/api/crm.php`). Секрети лишаються на сервері.
+Форма відправляє POST (JSON) на **`public/api/order.php`** (у збірці — `out/api/order.php`). Локально при `npm run dev` використовується **`/api/order`** (`src/app/api/order/route.ts`).
 
-Локально (`npm run dev`) використовується `src/app/api/crm/route.ts` → **`/api/crm`**.
+### Варіант A — вебхук (рекомендовано для Telegram, пошти, CRM)
 
-### Bitrix24 (лід у воронці)
+У панелі хостингу задайте змінну **`FORM_WEBHOOK_URL`** — URL, який приймає POST з тілом JSON:
 
-1. У Bitrix24: **Налаштування → Розробникам → Входящий вебхук** (або аналог) — створіть вебхук з правом **`crm`** (додавання лідів).
-2. Скопіюйте **повний URL виклику методу** `crm.lead.add` (вигляду: `https://ВАШ_ПОРТАЛ.bitrix24.*/rest/.../crm.lead.add`).
-3. На хостингу задайте змінну середовища **`CRM_BITRIX_LEAD_WEBHOOK_URL`** = цей URL.  
-   Або вставте URL у константу `CRM_BITRIX_LEAD_WEBHOOK_URL` у файлі `public/api/crm.php` (не комітьте секрет у публічний репозиторій).
+`source`, `name`, `phone`, `email`, `message`, `pageUrl`
 
-Якщо задано Bitrix-URL, **універсальний вебхук не використовується** (пріоритет у Bitrix).
+Далі можна підключити Make, Zapier або власний скрипт (у тому числі відправку в Telegram).
 
-### amoCRM та інші CRM
+### Варіант B — файл на сервері
 
-Прямий вхідний webhook у amoCRM для «голої» HTML-форми зазвичай складніший (OAuth, токени). Типовий обхід: **універсальний URL** + сценарій у **Make / Zapier / власний скрипт**, який з вашого JSON створює лід у amoCRM.
-
-1. На хостингу задайте **`CRM_GENERIC_WEBHOOK_URL`** — URL, який приймає POST з JSON:
-   - `source`, `name`, `phone`, `email`, `message`, `pageUrl`
-2. У Bitrix поле не заповнюйте (або залиште порожнім константи в `crm.php`), щоб спрацював generic.
+Якщо **`FORM_WEBHOOK_URL` не задано**, PHP дописує заявки в **`storage/orders.jsonl`** у корені сайту (поруч із `index.html`). Папка `storage/` має існувати й бути доступна для запису процесу PHP (створіть уручну або дайте права на автостворення).
 
 ### Локально
 
-У `.env.local` (не комітьте):
-
-- `CRM_BITRIX_LEAD_WEBHOOK_URL=https://.../crm.lead.add` **або**
-- `CRM_GENERIC_WEBHOOK_URL=https://...`
-
-Потім `npm run dev`.
+У `.env.local` (не комітьте) можна вказати `FORM_WEBHOOK_URL=...`. Якщо змінної немає, заявки зберігаються в **`storage/orders.jsonl`** у проєкті.
