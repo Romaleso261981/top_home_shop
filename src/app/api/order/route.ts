@@ -2,6 +2,19 @@ import { NextResponse } from "next/server";
 import { appendFile, mkdir } from "fs/promises";
 import path from "path";
 
+type BitrixLeadAddResponse = {
+  result?: unknown;
+  error?: string;
+  error_description?: string;
+};
+
+/** Повний URL виклику crm.lead.add (див. DEPLOY.md). */
+function resolveBitrixLeadWebhookUrl(): string {
+  const a = process.env.BITRIX24_LEAD_WEBHOOK_URL?.trim() ?? "";
+  const b = process.env.CRM_BITRIX_LEAD_WEBHOOK_URL?.trim() ?? "";
+  return a || b;
+}
+
 function parseBody(data: unknown): {
   name: string;
   phone: string;
@@ -42,6 +55,7 @@ async function appendLocalStorage(lead: {
 }
 
 export async function POST(req: Request) {
+  const bitrixUrl = resolveBitrixLeadWebhookUrl();
   const webhookUrl = process.env.FORM_WEBHOOK_URL?.trim() ?? "";
 
   let data: unknown;
@@ -61,7 +75,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "Empty payload" }, { status: 400 });
   }
 
-  const payload = {
+  const genericPayload = {
     source: "website",
     name: lead.name,
     phone: lead.phone,
@@ -70,11 +84,63 @@ export async function POST(req: Request) {
     pageUrl: lead.pageUrl,
   };
 
+  if (bitrixUrl) {
+    const comments = [lead.message, lead.pageUrl ? `Сторінка: ${lead.pageUrl}` : ""]
+      .filter(Boolean)
+      .join("\n");
+
+    const fields: Record<string, unknown> = {
+      TITLE: "Заявка з сайту",
+      NAME: lead.name || "Без імені",
+      COMMENTS: comments || "—",
+      SOURCE_ID: "WEB",
+      OPENED: "Y",
+    };
+    if (lead.phone) {
+      fields.PHONE = [{ VALUE: lead.phone, VALUE_TYPE: "WORK" }];
+    }
+    if (lead.email) {
+      fields.EMAIL = [{ VALUE: lead.email, VALUE_TYPE: "WORK" }];
+    }
+
+    const res = await fetch(bitrixUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ fields }),
+    });
+
+    const raw = await res.text();
+    let parsed: BitrixLeadAddResponse | null = null;
+    try {
+      parsed = JSON.parse(raw) as BitrixLeadAddResponse;
+    } catch {
+      parsed = null;
+    }
+
+    const okId =
+      parsed &&
+      parsed.result !== undefined &&
+      (typeof parsed.result === "number" || typeof parsed.result === "string");
+
+    if (!res.ok || !okId) {
+      const msg =
+        parsed?.error_description ??
+        parsed?.error ??
+        (raw ? raw.slice(0, 500) : "Bitrix24 error");
+      return NextResponse.json(
+        { ok: false, error: "Bitrix24: " + msg, details: raw },
+        { status: 502 },
+      );
+    }
+
+    return NextResponse.json({ ok: true });
+  }
+
   if (webhookUrl) {
     const res = await fetch(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(genericPayload),
     });
     const raw = await res.text().catch(() => "");
     if (!res.ok) {
@@ -92,7 +158,7 @@ export async function POST(req: Request) {
       {
         ok: false,
         error:
-          "Не вдалося зберегти заявку. Задайте FORM_WEBHOOK_URL у .env.local або перевірте права на папку storage/",
+          "Не вдалося зберегти заявку. Задайте BITRIX24_LEAD_WEBHOOK_URL або FORM_WEBHOOK_URL у .env.local, або перевірте права на папку storage/",
       },
       { status: 500 },
     );

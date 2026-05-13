@@ -4,8 +4,10 @@ declare(strict_types=1);
 /**
  * Заявки з форми сайту.
  *
- * 1) Якщо задано змінну середовища FORM_WEBHOOK_URL — POST JSON туди (Make, Zapier, власний скрипт, Telegram через посередника тощо).
- * 2) Інакше — допис рядка у storage/orders.jsonl поруч із сайтом (потрібні права на запис).
+ * Пріоритет:
+ * 1) BITRIX24_LEAD_WEBHOOK_URL (або CRM_BITRIX_LEAD_WEBHOOK_URL) — вхідний вебхук Bitrix24, метод crm.lead.add.
+ * 2) FORM_WEBHOOK_URL — довільний POST JSON.
+ * 3) Файл storage/orders.jsonl.
  */
 
 header('Content-Type: application/json; charset=utf-8');
@@ -24,6 +26,75 @@ function formEnv(string $name): string
     return $_SERVER[$name];
   }
   return '';
+}
+
+function resolveBitrixLeadWebhookUrl(): string
+{
+  $a = formEnv('BITRIX24_LEAD_WEBHOOK_URL');
+  if ($a !== '') {
+    return $a;
+  }
+  return formEnv('CRM_BITRIX_LEAD_WEBHOOK_URL');
+}
+
+/**
+ * @param array{name: string, phone: string, email: string, message: string, pageUrl: string} $lead
+ * @return array{ok: bool, error?: string, details?: string}
+ */
+function sendLeadToBitrix(string $webhookUrl, array $lead): array
+{
+  $comments = trim(implode("\n", array_filter([
+    $lead['message'] !== '' ? $lead['message'] : null,
+    $lead['pageUrl'] !== '' ? ('Сторінка: ' . $lead['pageUrl']) : null,
+  ])));
+
+  $fields = [
+    'TITLE' => 'Заявка з сайту',
+    'NAME' => $lead['name'] !== '' ? $lead['name'] : 'Без імені',
+    'COMMENTS' => $comments !== '' ? $comments : '—',
+    'SOURCE_ID' => 'WEB',
+    'OPENED' => 'Y',
+  ];
+  if ($lead['phone'] !== '') {
+    $fields['PHONE'] = [['VALUE' => $lead['phone'], 'VALUE_TYPE' => 'WORK']];
+  }
+  if ($lead['email'] !== '') {
+    $fields['EMAIL'] = [['VALUE' => $lead['email'], 'VALUE_TYPE' => 'WORK']];
+  }
+
+  $payload = json_encode(['fields' => $fields], JSON_UNESCAPED_UNICODE);
+
+  $ch = curl_init($webhookUrl);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_POST, true);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+  curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+
+  $resp = curl_exec($ch);
+  $curlErr = curl_error($ch);
+  $httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+  curl_close($ch);
+
+  if ($resp === false) {
+    return ['ok' => false, 'error' => 'cURL error: ' . $curlErr];
+  }
+
+  $decoded = json_decode($resp, true);
+  if (is_array($decoded) && isset($decoded['result']) && (is_int($decoded['result']) || is_numeric($decoded['result']))) {
+    return ['ok' => true];
+  }
+
+  $err = is_array($decoded) && isset($decoded['error_description'])
+    ? (string)$decoded['error_description']
+    : (is_array($decoded) && isset($decoded['error']) ? (string)$decoded['error'] : '');
+
+  $msg = $err !== '' ? ('Bitrix24: ' . $err) : 'Bitrix24 API error';
+  if ($err === '' && ($httpCode < 200 || $httpCode >= 300)) {
+    $msg = 'Bitrix24 API error (HTTP ' . $httpCode . ')';
+  }
+
+  return ['ok' => false, 'error' => $msg, 'details' => $resp];
 }
 
 /**
@@ -121,13 +192,30 @@ $lead = [
   'pageUrl' => $pageUrl,
 ];
 
+$bitrix = resolveBitrixLeadWebhookUrl();
 $webhook = formEnv('FORM_WEBHOOK_URL');
+
+if ($bitrix !== '') {
+  $result = sendLeadToBitrix($bitrix, $lead);
+  if (!$result['ok']) {
+    $msg = $result['error'] ?? 'Unknown error';
+    http_response_code(502);
+    $out = ['ok' => false, 'error' => $msg];
+    if (isset($result['details'])) {
+      $out['details'] = $result['details'];
+    }
+    echo json_encode($out, JSON_UNESCAPED_UNICODE);
+    exit;
+  }
+  echo json_encode(['ok' => true], JSON_UNESCAPED_UNICODE);
+  exit;
+}
 
 if ($webhook !== '') {
   $result = sendToWebhook($webhook, $lead);
   if (!$result['ok']) {
     $msg = $result['error'] ?? 'Unknown error';
-    http_response_code(strpos($msg, 'cURL') === 0 ? 502 : 502);
+    http_response_code(502);
     $out = ['ok' => false, 'error' => $msg];
     if (isset($result['details'])) {
       $out['details'] = $result['details'];
@@ -147,5 +235,5 @@ if (appendOrderFile($lead)) {
 http_response_code(500);
 echo json_encode([
   'ok' => false,
-  'error' => 'Не вдалося зберегти заявку. Задайте FORM_WEBHOOK_URL у середовищі хостингу або дайте PHP права на запис у папку storage/',
+  'error' => 'Не вдалося зберегти заявку. Задайте BITRIX24_LEAD_WEBHOOK_URL або FORM_WEBHOOK_URL у середовищі хостингу, або дайте PHP права на запис у папку storage/',
 ], JSON_UNESCAPED_UNICODE);
