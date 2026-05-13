@@ -8,6 +8,14 @@ import {
   type LandingOrderInput,
 } from "@/lib/salesdrive";
 import { sendTelegramOrderNotification } from "@/lib/telegramNotify";
+import {
+  HARDCODED_SALESDRIVE_API_KEY,
+  HARDCODED_SALESDRIVE_DOMAIN,
+  HARDCODED_SALESDRIVE_ORGANIZATION_ID,
+  HARDCODED_SALESDRIVE_STATUS_ID,
+  HARDCODED_SALESDRIVE_TYPE_ID,
+  optionalHardcodedPositiveInt,
+} from "@/config/salesdriveCredentials";
 
 type BitrixLeadAddResponse = {
   result?: unknown;
@@ -54,15 +62,6 @@ function resolveBitrixLeadWebhookUrl(): string {
   return a || b;
 }
 
-function parseIntEnv(name: string): number | undefined {
-  const v = process.env[name]?.trim();
-  if (!v) {
-    return undefined;
-  }
-  const n = Number.parseInt(v, 10);
-  return Number.isFinite(n) ? n : undefined;
-}
-
 function parseOrderBody(data: unknown): {
   name: string;
   phone: string;
@@ -106,8 +105,8 @@ async function notifySuccessChannels(
 }
 
 export async function POST(req: Request) {
-  const salesdriveKey = process.env.SALESDRIVE_API_KEY?.trim() ?? "";
-  const salesdriveDomain = process.env.SALESDRIVE_DOMAIN?.trim() ?? "";
+  const salesdriveKey = HARDCODED_SALESDRIVE_API_KEY.trim();
+  const salesdriveDomain = HARDCODED_SALESDRIVE_DOMAIN.trim();
   const bitrixUrl = resolveBitrixLeadWebhookUrl();
   const webhookUrl = process.env.FORM_WEBHOOK_URL?.trim() ?? "";
 
@@ -188,9 +187,9 @@ export async function POST(req: Request) {
 
   if (salesdriveKey && salesdriveDomain) {
     const sdBody = buildSalesDriveOrderBody(landingInput, {
-      statusId: parseIntEnv("SALESDRIVE_STATUS_ID"),
-      typeId: parseIntEnv("SALESDRIVE_TYPE_ID") ?? 1,
-      organizationId: parseIntEnv("SALESDRIVE_ORGANIZATION_ID"),
+      statusId: optionalHardcodedPositiveInt(HARDCODED_SALESDRIVE_STATUS_ID),
+      typeId: optionalHardcodedPositiveInt(HARDCODED_SALESDRIVE_TYPE_ID) ?? 1,
+      organizationId: optionalHardcodedPositiveInt(HARDCODED_SALESDRIVE_ORGANIZATION_ID),
     });
 
     const sd = await sendSalesDriveOrder(salesdriveDomain, salesdriveKey, sdBody);
@@ -332,7 +331,7 @@ export async function POST(req: Request) {
       {
         ok: false,
         error:
-          "Не вдалося зберегти заявку. Налаштуйте SalesDrive (SALESDRIVE_API_KEY + SALESDRIVE_DOMAIN) або інший канал у .env.local.",
+          "Не вдалося зберегти заявку. Заповніть HARDCODED_SALESDRIVE_* у src/config/salesdriveCredentials.ts або інший канал у .env.local.",
       },
       { status: 500 },
     );

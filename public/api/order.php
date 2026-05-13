@@ -5,9 +5,23 @@ declare(strict_types=1);
  * Заявки з лендінгу: SalesDrive → Bitrix24 → довільний вебхук → файл storage/orders.jsonl
  * SalesDrive API: https://api.salesdrive.me/api/docs/
  *
- * PHP: змінні з .env / .env.local (корінь сайту та папка api/), з api/salesdrive.secrets.php,
- * потім getenv. Файловий шар працює навіть якщо putenv вимкнено на хостингу.
+ * PHP: Bitrix / Telegram / Resend — як і раніше з .env та getenv (див. orderBootstrapEnv).
+ * SalesDrive — лише константи ORDER_SALESDRIVE_* нижче (без змінних середовища).
  */
+
+/** API-ключ з кабінету SalesDrive («інтеграція з сайтом»). Не комітьте секрет у публічний git. */
+const ORDER_SALESDRIVE_API_KEY = '';
+
+/** Піддомен без .salesdrive.me, наприклад mixs-bud */
+const ORDER_SALESDRIVE_DOMAIN = '';
+
+/** Порожньо = не передавати; інакше лише цифри, наприклад 123 */
+const ORDER_SALESDRIVE_STATUS_ID = '';
+
+/** Порожньо = тип заявки 1 (онлайн) */
+const ORDER_SALESDRIVE_TYPE_ID = '';
+
+const ORDER_SALESDRIVE_ORGANIZATION_ID = '';
 
 /**
  * Корінь сайту: для …/www/api/order.php це …/www
@@ -431,16 +445,14 @@ function sendSalesDriveOrder(string $domain, string $apiKey, array $body): array
   return ['ok' => false, 'error' => $snippet, 'raw' => (string)$resp];
 }
 
-function optionalIntEnv(string $name): ?int
+function orderHardcodedOptionalInt(string $raw): ?int
 {
-  $v = formEnv($name);
-  if ($v === '') {
+  $t = trim($raw);
+  if ($t === '' || !ctype_digit($t)) {
     return null;
   }
-  if (!ctype_digit($v)) {
-    return null;
-  }
-  return (int)$v;
+  $n = (int)$t;
+  return $n > 0 ? $n : null;
 }
 
 function notifyTelegram(string $text): void
@@ -566,8 +578,8 @@ $audit = [
 
 $lead = $audit;
 
-$sdk = formEnv('SALESDRIVE_API_KEY');
-$sdDomain = formEnv('SALESDRIVE_DOMAIN');
+$sdk = trim(ORDER_SALESDRIVE_API_KEY);
+$sdDomain = trim(ORDER_SALESDRIVE_DOMAIN);
 
 if ($sdk !== '' && $sdDomain !== '') {
   $serviceTitle = $service !== '' ? $service : 'Заявка з сайту';
@@ -592,7 +604,7 @@ if ($sdk !== '' && $sdDomain !== '') {
     'phone' => $phoneCrm,
     'email' => $email,
     'comment' => $comment,
-    'typeId' => optionalIntEnv('SALESDRIVE_TYPE_ID') ?? 1,
+    'typeId' => orderHardcodedOptionalInt(ORDER_SALESDRIVE_TYPE_ID) ?? 1,
     'products' => [[
       'id' => 'landing-service',
       'name' => $serviceTitle,
@@ -622,11 +634,11 @@ if ($sdk !== '' && $sdDomain !== '') {
   if ($pageUrl !== '') {
     $body['utmPage'] = $pageUrl;
   }
-  $sid = optionalIntEnv('SALESDRIVE_STATUS_ID');
+  $sid = orderHardcodedOptionalInt(ORDER_SALESDRIVE_STATUS_ID);
   if ($sid !== null) {
     $body['statusId'] = $sid;
   }
-  $org = optionalIntEnv('SALESDRIVE_ORGANIZATION_ID');
+  $org = orderHardcodedOptionalInt(ORDER_SALESDRIVE_ORGANIZATION_ID);
   if ($org !== null) {
     $body['organizationId'] = $org;
   }
@@ -701,7 +713,7 @@ if (appendJsonl('orders.jsonl', array_merge($audit, ['channel' => 'file']))) {
   echo json_encode([
     'ok' => true,
     'delivery' => 'file',
-    'warning' => 'Заявку збережено лише у файлі (storage/orders.jsonl), не в CRM. Оновіть api/order.php на сервері; ключі — у .env.local у корені сайту або в api/salesdrive.secrets.php (зразок: api/salesdrive.secrets.example.php). У логах Apache шукайте [order].',
+    'warning' => 'Заявку збережено лише у файлі (storage/orders.jsonl), не в CRM. У public/api/order.php заповніть константи ORDER_SALESDRIVE_API_KEY та ORDER_SALESDRIVE_DOMAIN (зверху файлу). У логах Apache — рядки [order].',
   ], JSON_UNESCAPED_UNICODE);
   exit;
 }
@@ -709,5 +721,5 @@ if (appendJsonl('orders.jsonl', array_merge($audit, ['channel' => 'file']))) {
 http_response_code(500);
 echo json_encode([
   'ok' => false,
-  'error' => 'Не вдалося зберегти заявку. Налаштуйте SalesDrive (SALESDRIVE_API_KEY + SALESDRIVE_DOMAIN) або інший канал.',
+  'error' => 'Не вдалося зберегти заявку. Заповніть ORDER_SALESDRIVE_API_KEY і ORDER_SALESDRIVE_DOMAIN у public/api/order.php або інший канал.',
 ], JSON_UNESCAPED_UNICODE);
