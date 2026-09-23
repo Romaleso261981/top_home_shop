@@ -69,7 +69,9 @@ SALESDRIVE_DOMAIN=ваш_піддомен
 SALESDRIVE_STATUS_ID=ід_статусу_з_api_statuses
 ```
 
-Після змін перезапустіть `npm run dev`.
+Після змін перезапустіть `npm run dev` (повністю зупиніть попередній процес). Якщо в терміналі раніше експортували `SALESDRIVE_*`, вони можуть перекрити `.env.local` — тоді запускайте dev у чистому терміналі або `env -u SALESDRIVE_API_KEY -u SALESDRIVE_DOMAIN npm run dev`.
+
+Шаблон змінних без секретів: **`.env.example`** у корені репозиторію.
 
 ## Telegram після заявки (опційно)
 
