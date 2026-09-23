@@ -19,6 +19,9 @@ export const HARDCODED_SALESDRIVE_TYPE_ID = "";
 
 export const HARDCODED_SALESDRIVE_ORGANIZATION_ID = "";
 
+/** База «Інтеграція з сайтом» у кабінеті (зазвичай 1). */
+export const HARDCODED_SALESDRIVE_FORM_ID = "1";
+
 export function optionalHardcodedPositiveInt(raw: string): number | undefined {
   const t = raw.trim();
   if (!t || !/^\d+$/.test(t)) {
@@ -59,4 +62,9 @@ export function resolveSalesDriveOrganizationId(): number | undefined {
     return optionalHardcodedPositiveInt(e);
   }
   return optionalHardcodedPositiveInt(HARDCODED_SALESDRIVE_ORGANIZATION_ID);
+}
+
+export function resolveSalesDriveFormId(): number {
+  const e = envTrim("SALESDRIVE_FORM_ID");
+  return optionalHardcodedPositiveInt(e) ?? optionalHardcodedPositiveInt(HARDCODED_SALESDRIVE_FORM_ID) ?? 1;
 }

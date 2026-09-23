@@ -11,6 +11,7 @@ import { sendTelegramOrderNotification } from "@/lib/telegramNotify";
 import {
   resolveSalesDriveApiKey,
   resolveSalesDriveDomain,
+  resolveSalesDriveFormId,
   resolveSalesDriveOrganizationId,
   resolveSalesDriveStatusId,
   resolveSalesDriveTypeId,
@@ -189,6 +190,7 @@ export async function POST(req: Request) {
       statusId: resolveSalesDriveStatusId(),
       typeId: resolveSalesDriveTypeId() ?? 1,
       organizationId: resolveSalesDriveOrganizationId(),
+      formId: resolveSalesDriveFormId(),
     });
 
     const sd = await sendSalesDriveOrder(salesdriveDomain, salesdriveKey, sdBody);

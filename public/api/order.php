@@ -631,16 +631,26 @@ if ($sdk !== '' && $sdDomain !== '') {
   $lName = $parts[1] ?? '';
   $mName = count($parts) > 2 ? implode(' ', array_slice($parts, 2)) : '';
 
-  $commentLines = array_filter([
-    $message !== '' ? $message : null,
-    'Послуга / товар: ' . $serviceTitle,
-    'Сторінка: ' . ($pageUrl !== '' ? $pageUrl : '—'),
-    'Дата та час заявки: ' . $submittedAt,
-  ]);
-  $comment = implode("\n", $commentLines);
+  $commentParts = [];
+  if ($message !== '') {
+    $commentParts[] = "Коментар клієнта:\n" . $message . "\n";
+  }
+  $commentParts[] = 'Послуга / товар: ' . $serviceTitle;
+  if ($email !== '') {
+    $commentParts[] = 'Email: ' . $email;
+  }
+  $commentParts[] = 'Сторінка: ' . ($pageUrl !== '' ? $pageUrl : '—');
+  $commentParts[] = 'Дата та час заявки: ' . $submittedAt;
+  if ($name !== '') {
+    $commentParts[] = 'Ім’я з форми (повністю): ' . $name;
+  }
+  $comment = implode("\n", $commentParts);
+
+  $formId = orderResolveSalesDriveOptionalInt('SALESDRIVE_FORM_ID', '1') ?? 1;
 
   $body = [
     'getResultData' => 1,
+    'formId' => $formId,
     'fName' => $fName,
     'lName' => $lName,
     'mName' => $mName,
@@ -653,7 +663,7 @@ if ($sdk !== '' && $sdDomain !== '') {
       'name' => $serviceTitle,
       'costPerItem' => 0,
       'amount' => 1,
-      'description' => '',
+      'description' => $message !== '' ? $message : '—',
       'discount' => '0',
       'sku' => '',
       'commission' => '0',

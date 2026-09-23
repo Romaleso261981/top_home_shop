@@ -37,8 +37,27 @@ function splitName(full: string): { fName: string; lName: string; mName: string 
   const parts = t.split(" ");
   const fName = parts[0] ?? t;
   const lName = parts[1] ?? "";
+  /** Третє слово і далі — по батькові / повне ім’я, якщо ввели три частини */
   const mName = parts.length > 2 ? parts.slice(2).join(" ") : "";
   return { fName, lName, mName };
+}
+
+function buildOrderComment(input: LandingOrderInput, serviceTitle: string): string {
+  const lines: string[] = [];
+  const msg = input.message.trim();
+  if (msg) {
+    lines.push("Коментар клієнта:", msg, "");
+  }
+  lines.push("Послуга / товар:", serviceTitle);
+  if (input.email.trim()) {
+    lines.push("Email:", input.email.trim());
+  }
+  lines.push("Сторінка:", input.pageUrl || "—");
+  lines.push("Дата та час заявки:", input.submittedAt);
+  if (input.name.trim()) {
+    lines.push("Ім’я з форми (повністю):", input.name.trim());
+  }
+  return lines.join("\n");
 }
 
 /**
@@ -53,26 +72,24 @@ export function buildSalesDriveOrderBody(
     /** Тип заявки: 1 — онлайн */
     typeId?: number;
     organizationId?: number;
+    /** ID бази заявок «інтеграція з сайтом» */
+    formId?: number;
   } = {},
 ): Record<string, unknown> {
   const { fName, lName, mName } = splitName(input.name);
   const serviceTitle = input.service.trim() || "Заявка з сайту";
-
-  const commentLines = [
-    input.message.trim() || null,
-    `Послуга / товар: ${serviceTitle}`,
-    `Сторінка: ${input.pageUrl || "—"}`,
-    `Дата та час заявки: ${input.submittedAt}`,
-  ].filter(Boolean);
+  const comment = buildOrderComment(input, serviceTitle);
+  const messageForProduct = input.message.trim() || "—";
 
   const body: Record<string, unknown> = {
     getResultData: 1,
+    formId: options.formId ?? 1,
     fName,
     lName,
     mName,
     phone: input.phone,
     email: input.email.trim(),
-    comment: commentLines.join("\n"),
+    comment,
     typeId: options.typeId ?? 1,
     products: [
       {
@@ -80,7 +97,7 @@ export function buildSalesDriveOrderBody(
         name: serviceTitle,
         costPerItem: 0,
         amount: 1,
-        description: "",
+        description: messageForProduct,
         discount: "0",
         sku: "",
         commission: "0",
