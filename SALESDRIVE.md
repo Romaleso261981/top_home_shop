@@ -1,5 +1,7 @@
 # Інтеграція з SalesDrive CRM
 
+**Прод на Vercel:** форма → **`POST /api/order`** (`src/app/api/order/route.ts`). Ключі в **Vercel → Environment Variables** (`SALESDRIVE_API_KEY`, `SALESDRIVE_DOMAIN`). Покроково: **`VERCEL.md`**.
+
 Офіційна документація REST API: [https://api.salesdrive.me/api/docs/](https://api.salesdrive.me/api/docs/)
 
 ## Де взяти API-ключ

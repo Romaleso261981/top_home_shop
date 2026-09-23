@@ -2,6 +2,7 @@
 
 import { ctaButtonClass } from "@/components/buttonStyles";
 import { isValidUaPhone } from "@/lib/phone";
+import { ORDER_SUBMIT_PATH } from "@/lib/orderApi";
 import { parseUtmFromUrl } from "@/lib/utm";
 import { useMemo, useRef, useState } from "react";
 
@@ -111,14 +112,7 @@ export function FeedbackFormSection({
             };
 
             try {
-              const isLocal =
-                typeof window !== "undefined" &&
-                (window.location.hostname === "localhost" ||
-                  window.location.hostname === "127.0.0.1");
-
-              const endpoint = isLocal ? "/api/order" : "/api/order.php";
-
-              const res = await fetch(endpoint, {
+              const res = await fetch(ORDER_SUBMIT_PATH, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload),

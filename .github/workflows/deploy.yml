@@ -1,8 +1,8 @@
 name: Deploy to hosting
 
+# Основний прод — Vercel (див. VERCEL.md). SSH-деплой лише вручну, якщо потрібен legacy static+PHP.
 on:
-  push:
-    branches: [main, master]
+  workflow_dispatch:
 
 jobs:
   deploy:
