@@ -30,16 +30,39 @@ jobs:
           SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
           SERVER_PATH: ${{ secrets.SERVER_PATH }}
         run: |
-          set -e
+          set -euo pipefail
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null || true
           printf 'Host %s\n  IdentityFile ~/.ssh/deploy_key\n  IdentitiesOnly yes\n' "$SSH_HOST" >> ~/.ssh/config
           chmod 600 ~/.ssh/config
 
+          SSH_CMD=(ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o IdentitiesOnly=yes)
+
+          echo "== Preflight: SSH, disk, write access =="
+          "${SSH_CMD[@]}" "${SSH_USERNAME}@${SSH_HOST}" "bash -s" <<EOF
+          set -euo pipefail
+          TARGET="${SERVER_PATH}"
+          echo "SERVER_PATH=\${TARGET}"
+          df -h "\${HOME}" "\${TARGET}" 2>/dev/null || df -h
+          mkdir -p "\${TARGET}"
+          touch "\${TARGET}/.deploy-write-test" && rm -f "\${TARGET}/.deploy-write-test"
+          if ! command -v rsync >/dev/null 2>&1; then
+            echo "::warning::rsync not found in PATH on server (remote side may still work via SSH shell)"
+          fi
+          EOF
+
+          echo "== Rsync static out/ -> SERVER_PATH =="
+          # --no-* : shared hosting often rejects owner/group/mode from CI (rsync exit 11)
+          # protect : keep secrets and local order logs when SERVER_PATH = repo root
           rsync -avz --delete \
+            --no-owner --no-group --no-perms \
+            --filter='protect .env' \
+            --filter='protect .env.local' \
+            --filter='protect storage/' \
+            --filter='protect storage/**' \
             -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no -o IdentitiesOnly=yes" \
-            ./out/ ${SSH_USERNAME}@${SSH_HOST}:${SERVER_PATH}/
+            ./out/ "${SSH_USERNAME}@${SSH_HOST}:${SERVER_PATH}/"
 
           rm -f ~/.ssh/deploy_key
